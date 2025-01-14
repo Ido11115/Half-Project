@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="server.ServerController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <!-- Server Controls -->
+    <Label text="Server Controls" />
+    <HBox spacing="10">
+        <TextField fx:id="ipField" promptText="IP Address" />
+        <TextField fx:id="portField" promptText="Port" />
+        <Button text="Start Server" onAction="#startServer" />
+    </HBox>
+
+    <!-- Logs and Fetch Subscribers -->
+    <Button text="Fetch Subscribers" onAction="#fetchSubscribers" />
+    <TextArea fx:id="resultArea" editable="false" prefHeight="200" prefWidth="300" />
+</VBox>
