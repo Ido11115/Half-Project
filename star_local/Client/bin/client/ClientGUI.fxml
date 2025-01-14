@@ -3,7 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="client.ClientGUIController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+
+<VBox xmlns:fx="http://javafx.com/fxml"  spacing="10" alignment="CENTER" style="-fx-padding: 20;">
     <Label text="Welcome to the Client Main Screen!" />
     <Button text="Logout" onAction="#handleLogout" />
 </VBox>

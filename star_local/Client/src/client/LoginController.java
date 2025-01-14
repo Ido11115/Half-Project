@@ -118,4 +118,10 @@ public class LoginController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private void handleLogout() {
+        System.out.println("Logging out...");
+        Stage currentStage = (Stage) ((javafx.scene.Node) null).getScene().getWindow();
+        currentStage.close();
+    }
 }
