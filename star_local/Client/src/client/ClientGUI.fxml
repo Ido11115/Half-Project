@@ -1,31 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10" xmlns="http://javafx.com/javafx"
-	xmlns:fx="http://javafx.com/fxml"
-	fx:controller="client.ClientController">
-	<children>
-		<TextField fx:id="ipField" promptText="Enter server IP" />
-		<TextField fx:id="portField" promptText="Enter server port" />
-		<Button text="Connect" onAction="#connectToServer" />
-
-		<Button text="Fetch Subscribers" onAction="#fetchSubscribers" />
-		<TextArea fx:id="subscribersTextArea" editable="false" />
-
-		<Label text="Subscriber ID:" />
-		<TextField fx:id="subscriberIdField" promptText="Enter Subscriber ID" />
-
-		<Label text="Phone:" />
-		<TextField fx:id="subscriberPhoneField" promptText="Enter Phone Number" />
-
-		<Label text="Email:" />
-		<TextField fx:id="subscriberEmailField" promptText="Enter Email Address" />
-
-		<Button text="Update Subscriber" onAction="#updateSubscriber" />
-	</children>
-	<padding>
-		<Insets top="10" right="10" bottom="10" left="10" />
-	</padding>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="client.ClientGUIController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <Label text="Welcome to the Client Main Screen!" />
+    <Button text="Logout" onAction="#handleLogout" />
 </VBox>

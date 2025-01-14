@@ -1,152 +1,190 @@
 package client;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.ButtonBar;
-import javafx.event.ActionEvent;
+import javafx.stage.Stage;
 
 public class ClientController {
-	@FXML
-	private TextField ipField;
 
-	@FXML
-	private TextField portField;
+    // Login fields
+    @FXML
+    private ToggleGroup roleGroup;
+    @FXML
+    private RadioButton subscriberRadioButton;
+    @FXML
+    private RadioButton librarianRadioButton;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private Label errorLabel;
 
-	@FXML
-	private TextField subscriberIdField;
+    // Registration fields
+    @FXML
+    private TextField subscriberIdField;
+    @FXML
+    private TextField nameField;
+    @FXML
+    private TextField phoneField;
+    @FXML
+    private TextField emailField;
+    @FXML
+    private PasswordField registerPasswordField;
+    @FXML
+    private Label registerErrorLabel;
 
-	@FXML
-	private TextField subscriberPhoneField;
+    // Server connection fields
+    @FXML
+    private VBox serverConnectPopup;
+    @FXML
+    private TextField ipField;
+    @FXML
+    private TextField portField;
+    @FXML
+    private Label connectErrorLabel;
 
-	@FXML
-	private TextField subscriberEmailField;
+    private ServerCommunicator serverCommunicator;
+    private boolean isLoggedIn = false;
 
-	@FXML
-	private TextArea subscribersTextArea;
+    @FXML
+    public void initialize() {
+        showServerConnectPopup(); // Show the server connection dialog at startup
+    }
 
-	private ServerCommunicator serverCommunicator;
-	private boolean isLoggedIn = false;
+    @FXML
+    private void handleLogin() {
+        if (isLoggedIn) return;
 
-	@FXML
-	public void initialize() {
-		serverCommunicator = new ServerCommunicator("localhost", 5555);
-		showLoginPopup(); // Display the login dialog on startup
-	}
+        String role = subscriberRadioButton.isSelected() ? "Subscriber" : "Librarian";
+        String username = usernameField.getText().trim();
+        String password = passwordField.getText().trim();
 
-	@FXML
-	private void connectToServer() {
-		try {
-			String ip = ipField.getText().trim();
-			int port = Integer.parseInt(portField.getText().trim());
-			serverCommunicator = new ServerCommunicator(ip, port);
-			subscribersTextArea.setText("Connected to server at " + ip + ":" + port);
-		} catch (NumberFormatException e) {
-			subscribersTextArea.setText("Invalid port number.");
-		} catch (Exception e) {
-			subscribersTextArea.setText("Error connecting to server: " + e.getMessage());
-		}
-	}
+        if (username.isEmpty() || password.isEmpty()) {
+            errorLabel.setText("Both fields are required.");
+            return;
+        }
 
-	@FXML
-	private void fetchSubscribers() {
-		try {
-			String response = serverCommunicator.getSubscribers();
-			subscribersTextArea.setText(response);
-		} catch (Exception e) {
-			subscribersTextArea.setText("Error fetching subscribers: " + e.getMessage());
-		}
-	}
+        Task<Void> loginTask = new Task<>() {
+            @Override
+            protected Void call() {
+                try {
+                    String command = "LOGIN," + role + "," + username + "," + password;
+                    String response = serverCommunicator.sendRequest(command);
 
-	@FXML
-	private void updateSubscriber() {
-		try {
-			int id = Integer.parseInt(subscriberIdField.getText().trim());
-			String phone = subscriberPhoneField.getText().trim();
-			String email = subscriberEmailField.getText().trim();
+                    javafx.application.Platform.runLater(() -> {
+                        if ("Login successful".equals(response)) {
+                            isLoggedIn = true;
+                            errorLabel.setText("");
+                            System.out.println("Logged in successfully as " + username);
 
-			if (phone.isEmpty() || email.isEmpty()) {
-				subscribersTextArea.setText("Phone and email cannot be empty.");
-				return;
-			}
+                            // Close the login screen
+                            closeCurrentStage();
+                        } else {
+                            errorLabel.setText(response);
+                        }
+                    });
+                } catch (Exception e) {
+                    javafx.application.Platform.runLater(() -> {
+                        errorLabel.setText("Error communicating with server: " + e.getMessage());
+                    });
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
 
-			String response = serverCommunicator.updateSubscriber(id, phone, email);
-			subscribersTextArea.setText(response);
-		} catch (NumberFormatException e) {
-			subscribersTextArea.setText("Invalid subscriber ID.");
-		} catch (Exception e) {
-			subscribersTextArea.setText("Error updating subscriber: " + e.getMessage());
-		}
-	}
+        new Thread(loginTask).start();
+    }
 
 
-	@FXML
-	public void showLoginPopup() {
-	    if (isLoggedIn) {
-	        return; // Prevent reopening the dialog if already logged in
-	    }
 
-	    // Create a custom dialog
-	    Dialog<Void> dialog = new Dialog<>();
-	    dialog.setTitle("Login");
-	    dialog.setHeaderText("Enter your login details.");
+    @FXML
+    private void handleRegister() {
+        String idText = subscriberIdField.getText().trim();
+        String name = nameField.getText().trim();
+        String phone = phoneField.getText().trim();
+        String email = emailField.getText().trim();
+        String password = registerPasswordField.getText().trim();
 
-	    TextField idField = new TextField();
-	    idField.setPromptText("Client ID");
+        if (idText.isEmpty() || name.isEmpty() || phone.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            registerErrorLabel.setText("All fields are required.");
+            return;
+        }
 
-	    TextField nameField = new TextField();
-	    nameField.setPromptText("Client Name");
+        int subscriberId;
+        try {
+            subscriberId = Integer.parseInt(idText);
+        } catch (NumberFormatException e) {
+            registerErrorLabel.setText("Subscriber ID must be a valid number.");
+            return;
+        }
 
-	    Label errorLabel = new Label();
-	    errorLabel.setStyle("-fx-text-fill: red;");
+        Task<Void> registerTask = new Task<>() {
+            @Override
+            protected Void call() {
+                try {
+                    String command = "REGISTER_SUBSCRIBER," + subscriberId + "," + name + "," + phone + "," + email + "," + password;
+                    String response = serverCommunicator.sendRequest(command);
 
-	    VBox content = new VBox(10, new Label("Client ID:"), idField, new Label("Client Name:"), nameField, errorLabel);
-	    dialog.getDialogPane().setContent(content);
+                    javafx.application.Platform.runLater(() -> {
+                        if ("Registration successful".equals(response)) {
+                            registerErrorLabel.setText("");
+                            System.out.println("Registered successfully with ID " + subscriberId);
+                        } else {
+                            registerErrorLabel.setText(response);
+                        }
+                    });
+                } catch (Exception e) {
+                    javafx.application.Platform.runLater(() -> {
+                        registerErrorLabel.setText("Error communicating with server: " + e.getMessage());
+                    });
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
 
-	    ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
-	    dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        new Thread(registerTask).start();
+    }
 
-	    Button loginButton = (Button) dialog.getDialogPane().lookupButton(loginButtonType);
-	    loginButton.addEventFilter(ActionEvent.ACTION, event -> {
-	        String clientIdText = idField.getText().trim();
-	        String clientName = nameField.getText().trim();
+    @FXML
+    public void showServerConnectPopup() {
+        serverConnectPopup.setVisible(true);
+    }
 
-	        try {
-	            int clientId = Integer.parseInt(clientIdText);
-	            if (clientName.isEmpty()) {
-	                errorLabel.setText("Name cannot be empty.");
-	                event.consume(); // Prevent dialog from closing
-	                return;
-	            }
+    @FXML
+    public void hideServerConnectPopup() {
+        serverConnectPopup.setVisible(false);
+    }
 
-	            // Send login command to server
-	            String response = serverCommunicator.sendRequest("LOGIN," + clientId + "," + clientName);
-	            if ("Login successful".equals(response)) {
-	                isLoggedIn = true; // Update login status
-	                subscribersTextArea.setText("Logged in as: ID=" + clientId + ", Name=" + clientName);
-	                dialog.close(); // Close the dialog explicitly
-	            } else {
-	                errorLabel.setText(response); // Display error from server
-	                event.consume(); // Prevent dialog from closing
-	            }
-	        } catch (NumberFormatException e) {
-	            errorLabel.setText("Invalid ID format.");
-	            event.consume(); // Prevent dialog from closing
-	        } catch (Exception e) {
-	            errorLabel.setText("Error communicating with server: " + e.getMessage());
-	            event.consume(); // Prevent dialog from closing
-	        }
-	    });
+    @FXML
+    public void handleServerConnect() {
+        String ip = ipField.getText().trim();
+        String portText = portField.getText().trim();
 
-	    // Show the dialog and wait
-	    dialog.showAndWait();
-	}
+        try {
+            int port = Integer.parseInt(portText);
+            serverCommunicator = new ServerCommunicator(ip, port);
 
+            String response = serverCommunicator.sendRequest("TEST_CONNECTION");
+            if ("Connection successful".equals(response)) {
+                connectErrorLabel.setText("");
+                hideServerConnectPopup();
+            } else {
+                connectErrorLabel.setText("Failed to connect: " + response);
+            }
+        } catch (NumberFormatException e) {
+            connectErrorLabel.setText("Invalid port number.");
+        } catch (Exception e) {
+            connectErrorLabel.setText("Error connecting to server: " + e.getMessage());
+        }
+    }
+    private void closeCurrentStage() {
+        Stage stage = (Stage) usernameField.getScene().getWindow();
+        stage.close();
+    }
 
 }

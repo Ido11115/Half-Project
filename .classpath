@@ -1,7 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" path="star_local/Client/src"/>
 	<classpathentry kind="src" path="star_local/Server/src"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/eclipse-workspace/mysql-connector-java-8.0.13.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.code.editor.configuration_3.7.0.202010120750.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.code.editor.ldef.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.code.editor.ldef_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.core.guice_3.7.0.202010120750.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.core_3.7.0.202010120750.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.formats.svg_3.7.0.202010120750.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.converter_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.css.cssext.proposals_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.css.cssext.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.css.cssext_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.css.jfx2_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.css.jfx8_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.css.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.css_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.fxgraph.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.fxgraph_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.fxml.compiler_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.fxml_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.gmodel.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.gmodel_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.jdt.core_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.jdt.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.l10n.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.l10n_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.m2e_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.model_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.mvnosgi.launching.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.mvnosgi.launching_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.pde.core_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.pde.ui.e4_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.pde.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.rrobot.dsl.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.rrobot.dsl_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.rrobot.model_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.rrobot_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.ui.preview_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ide.ui_3.7.0.202010120832.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.osgi.util_3.7.0.202010120750.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.osgi_3.7.0.202010120826.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ui.animation_3.7.0.202010120750.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ui.controls_3.7.0.202010120750.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ui.panes_3.7.0.202010120750.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ui.workbench3_3.7.0.202010120826.jar"/>
 	<classpathentry kind="output" path="star_local/Client/bin"/>
 </classpath>

@@ -1,24 +1,27 @@
-import java.io.*;
-import java.net.*;
-import java.sql.*;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Server {
-	private static final int PORT = 5555; // Port to listen on
+    private static final int PORT = 5555;
 
-	public void start() {
-		System.out.println("Server is starting...");
-		try (ServerSocket serverSocket = new ServerSocket(PORT, 50, InetAddress.getByName("0.0.0.0"));) {
-			System.out.println("Server is listening on port " + PORT);
+    public void start() {
+        System.out.println("Server is starting...");
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            System.out.println("Server is running on localhost:" + PORT);
 
-			while (true) {
-				Socket socket = serverSocket.accept();
-				System.out.println("New client connected: " + socket.getInetAddress().getHostAddress());
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("New client connected: " + clientSocket.getInetAddress());
+                new Thread(new ClientHandler(clientSocket)).start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-				// Handle client in a separate thread
-				new Thread(new ClientHandler(socket)).start();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    public static void main(String[] args) {
+        new Server().start();
+    }
 }

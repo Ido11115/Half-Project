@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="client.ConnectController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <Label text="Connect to Server" />
+    <TextField fx:id="ipField" promptText="Server IP" />
+    <TextField fx:id="portField" promptText="Port" />
+    <Label fx:id="connectErrorLabel" text="" style="-fx-text-fill: red;" />
+    <HBox spacing="10">
+        <Button text="Connect" onAction="#handleServerConnect" />
+        <Button text="Cancel" onAction="#handleCancel" />
+    </HBox>
+</VBox>
