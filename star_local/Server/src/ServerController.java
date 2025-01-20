@@ -68,26 +68,5 @@ public class ServerController {
         }
     }
 
-    @FXML
-    private void fetchSubscribers() {
-        DBHandler dbHandler = new DBHandler();
-
-        try {
-            List<Subscriber> subscribers = dbHandler.getAllSubscribersList();
-
-            StringBuilder sb = new StringBuilder();
-            for (Subscriber sub : subscribers) {
-                sb.append("ID: ").append(sub.getId()).append(", ")
-                        .append("Name: ").append(sub.getName()).append(", ")
-                        .append("Phone: ").append(sub.getPhone()).append(", ")
-                        .append("Email: ").append(sub.getEmail()).append("\n");
-            }
-
-            resultArea.setText(sb.toString());
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            resultArea.setText("Error fetching subscribers: " + e.getMessage());
-        }
-    }
+   
 }

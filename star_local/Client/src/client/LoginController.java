@@ -1,6 +1,9 @@
 package client;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
@@ -73,12 +76,35 @@ public class LoginController {
                 // Close the login screen
                 Stage currentStage = (Stage) usernameField.getScene().getWindow();
                 currentStage.close();
+
+                if ("Librarian".equalsIgnoreCase(role)) {
+                    loadLibrarianMenu();
+                }
+                // Handle subscriber login if needed
             } else {
                 errorLabel.setText(response);
             }
         } catch (Exception e) {
             errorLabel.setText("Error communicating with server: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void loadLibrarianMenu() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("LibrarianMenu.fxml"));
+            Parent root = loader.load();
+
+            LibrarianMenuController librarianController = loader.getController();
+            librarianController.setServerCommunicator(serverCommunicator);
+
+            Stage librarianStage = new Stage();
+            librarianStage.setTitle("Librarian Menu");
+            librarianStage.setScene(new Scene(root));
+            librarianStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Failed to load librarian menu.");
         }
     }
 
@@ -104,7 +130,7 @@ public class LoginController {
         }
 
         try {
-            String command = "REGISTER_SUBSCRIBER," + subscriberId + "," + name + "," + phone + "," + email + "," + password;
+            String command = "REGISTER_SUBSCRIBER," + subscriberId + "," + name + "," + email + "," + phone + "," + password;
             String response = serverCommunicator.sendRequest(command);
 
             if ("Registration successful".equals(response)) {
@@ -118,10 +144,22 @@ public class LoginController {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void handleLogout() {
-        System.out.println("Logging out...");
-        Stage currentStage = (Stage) ((javafx.scene.Node) null).getScene().getWindow();
-        currentStage.close();
+        try {
+            System.out.println("Logging out...");
+            Stage currentStage = (Stage) usernameField.getScene().getWindow();
+            currentStage.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

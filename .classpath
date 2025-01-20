@@ -51,5 +51,8 @@
 	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ui.controls_3.7.0.202010120750.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ui.panes_3.7.0.202010120750.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Enginerring methoed/javafx_store/plugins/org.eclipse.fx.ui.workbench3_3.7.0.202010120826.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Project/prototype/Final_stage/jackson-core-2.2.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Project/prototype/Final_stage/jackson-databind-2.2.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Project/prototype/Final_stage/jackson-annotations-2.2.3.jar"/>
 	<classpathentry kind="output" path="star_local/Client/bin"/>
 </classpath>
