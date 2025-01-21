@@ -1,10 +1,10 @@
-
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ClientHandler implements Runnable {
 	private Socket clientSocket;
@@ -15,55 +15,57 @@ public class ClientHandler implements Runnable {
 		this.dbHandler = new DBHandler(); // Instantiate DBHandler
 	}
 
+	@Override
 	public void run() {
-		try (ObjectOutputStream output = new ObjectOutputStream(clientSocket.getOutputStream());
-				ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream())) {
-
+		try (BufferedReader reader = new BufferedReader(
+				new InputStreamReader(clientSocket.getInputStream(), StandardCharsets.UTF_8));
+				PrintWriter writer = new PrintWriter(
+						new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8), true)) {
 			System.out.println("New client connected: " + clientSocket.getInetAddress());
 
-			Object obj;
-			while ((obj = input.readObject()) != null) {
-				if (!(obj instanceof String)) {
-					output.writeObject("Invalid command format.");
-					output.flush();
-					continue;
-				}
-
-				String command = (String) obj;
+			String command;
+			while ((command = reader.readLine()) != null) {
 				System.out.println("Received command: " + command);
 
-				if (command.equals("TEST_CONNECTION")) {
-					output.writeObject("Connection successful");
+				if (command.equalsIgnoreCase("TEST_CONNECTION")) {
+					writer.println("Connection successful");
 				} else if (command.startsWith("LOGIN")) {
-					handleLogin(command, output);
+					handleLogin(command, writer);
 				} else if (command.startsWith("REGISTER_SUBSCRIBER")) {
-					handleRegisterSubscriber(command, output);
+					handleRegisterSubscriber(command, writer);
 				} else if (command.startsWith("LOAN_BOOK")) {
-					handleLoanBook(command, output);
+					handleLoanBook(command, writer);
 				} else if (command.startsWith("RETURN_BOOK")) {
-					handleReturnBook(command, output);
-				} else if (command.startsWith("GET_SUBSCRIBER_INFO")) {
-					handleGetSubscribers(output);
-				} else if (command.startsWith("LOAN_BOOK")) {
-					handleLoanBook(command, output);
-				} else if (command.startsWith("RETURN_BOOK")) {
-					handleReturnBook(command, output);
-				} else if (command.equals("GET_SUBSCRIBERS")) {
-					handleGetSubscribers(output);
+					handleReturnBook(command, writer);
+				} else if (command.startsWith("GET_SUBSCRIBERS")) {
+					handleGetSubscribersRequest(writer);
+				} else if (command.startsWith("GET_SUBSCRIPTION_HISTORY")) {
+					handleGetSubscriptionHistory(command, writer);
+				} else if (command.startsWith("GET_SUBSCRIBER_STATUS")) {
+					handleGetSubscriberStatus(command, writer);
+				} else if (command.startsWith("SAVE_SUBSCRIPTION_HISTORY")) {
+					handleSaveSubscriptionHistory(command, writer);
+				} else if (command.startsWith("UPDATE_SUBSCRIBER_STATUS")) {
+					handleUpdateSubscriberStatus(command, writer);
 				}else {
-					output.writeObject("Unknown command");
+					writer.println("Unknown command");
 				}
-				output.flush();
 			}
 		} catch (Exception e) {
 			System.out.println("Client disconnected.");
+		} finally {
+			try {
+				clientSocket.close();
+			} catch (IOException e) {
+				System.err.println("Error closing client socket: " + e.getMessage());
+			}
 		}
 	}
 
-	private void handleLogin(String command, ObjectOutputStream output) throws IOException {
+	private void handleLogin(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 4) {
-			output.writeObject("Invalid command format.");
+			writer.println("Invalid command format.");
 			return;
 		}
 
@@ -81,27 +83,27 @@ public class ClientHandler implements Runnable {
 			} else if (role.equalsIgnoreCase("Librarian")) {
 				isValid = dbHandler.validateLibrarianLogin(username, password);
 			} else {
-				output.writeObject("Invalid role specified.");
+				writer.println("Invalid role specified.");
 				return;
 			}
 
 			if (isValid) {
 				System.out.println("Login successful for: " + username);
-				output.writeObject("Login successful");
+				writer.println("Login successful");
 			} else {
 				System.out.println("Login failed for: " + username);
-				output.writeObject("Invalid username or password");
+				writer.println("Invalid username or password");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			output.writeObject("Error processing login: " + e.getMessage());
+			writer.println("Error processing login: " + e.getMessage());
 		}
 	}
 
-	private void handleRegisterSubscriber(String command, ObjectOutputStream output) throws IOException {
+	private void handleRegisterSubscriber(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 9) {
-			output.writeObject(
+			writer.println(
 					"Invalid command format. Expected: REGISTER_SUBSCRIBER,id,name,lastName,userName,phone,email,password,status");
 			return;
 		}
@@ -119,17 +121,17 @@ public class ClientHandler implements Runnable {
 
 		try {
 			dbHandler.addSubscriber(subscriberId, name, lastName, userName, phone, email, password, status);
-			output.writeObject("Registration successful");
+			writer.println("Registration successful");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			output.writeObject("Database error: " + e.getMessage());
+			writer.println("Database error: " + e.getMessage());
 		}
 	}
 
-	private void handleLoanBook(String command, ObjectOutputStream output) throws IOException {
+	private void handleLoanBook(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 5) {
-			output.writeObject("Invalid command format. Expected: LOAN_BOOK,subscriberId,bookId,loanDate,returnDate");
+			writer.println("Invalid command format. Expected: LOAN_BOOK,subscriberId,bookId,loanDate,returnDate");
 			return;
 		}
 
@@ -142,22 +144,22 @@ public class ClientHandler implements Runnable {
 
 		try {
 			if (!dbHandler.isSubscriberActive(subscriberId)) {
-				output.writeObject("Subscriber is not active.");
+				writer.println("Subscriber is not active.");
 				return;
 			}
 
 			dbHandler.loanBookToSubscriber(subscriberId, bookId, loanDate, returnDate);
-			output.writeObject("Loan successful");
+			writer.println("Loan successful");
 		} catch (Exception e) {
 			e.printStackTrace();
-			output.writeObject("Error processing loan: " + e.getMessage());
+			writer.println("Error processing loan: " + e.getMessage());
 		}
 	}
 
-	private void handleReturnBook(String command, ObjectOutputStream output) throws IOException {
+	private void handleReturnBook(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 3) {
-			output.writeObject("Invalid command format. Expected: RETURN_BOOK,subscriberId,bookId");
+			writer.println("Invalid command format. Expected: RETURN_BOOK,subscriberId,bookId");
 			return;
 		}
 
@@ -167,38 +169,111 @@ public class ClientHandler implements Runnable {
 		System.out.println("Processing return request: Subscriber ID=" + subscriberId + ", Book ID=" + bookId);
 
 		try {
-			// Validate that the loan exists
 			if (!dbHandler.isLoanExists(subscriberId, bookId)) {
-				output.writeObject("No loan record found for Subscriber ID " + subscriberId + " and Book ID " + bookId);
+				writer.println("No loan record found for Subscriber ID " + subscriberId + " and Book ID " + bookId);
 				return;
 			}
 
-			// Process the return
 			dbHandler.returnBookFromSubscriber(subscriberId, bookId);
-			output.writeObject("Return successful");
+			writer.println("Return successful");
 		} catch (Exception e) {
 			e.printStackTrace();
-			output.writeObject("Error processing return: " + e.getMessage());
+			writer.println("Error processing return: " + e.getMessage());
 		}
 	}
 
-	private void handleGetSubscribers(ObjectOutputStream output) throws IOException {
+	private void handleGetSubscribersRequest(PrintWriter writer) {
+		try {
+			String subscriberData = dbHandler.getAllSubscribersAsString();
+			writer.println(subscriberData);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error fetching subscribers: " + e.getMessage());
+		}
+	}
+
+	private void handleGetSubscriptionHistory(String command, PrintWriter writer) {
+		String[] parts = command.split(",");
+		if (parts.length != 2) {
+			writer.println("Invalid command format. Expected: GET_SUBSCRIPTION_HISTORY,subscriberId");
+			return;
+		}
+
+		int subscriberId = Integer.parseInt(parts[1]);
+		System.out.println("Fetching subscription history for Subscriber ID: " + subscriberId);
+
+		try {
+			String history = dbHandler.getSubscriptionHistory(subscriberId);
+			System.out.println("History for Subscriber ID " + subscriberId + ": " + history);
+			writer.println(history.isEmpty() ? "No history available for this subscriber." : history);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error fetching subscription history: " + e.getMessage());
+		}
+	}
+
+	private void handleGetSubscriberStatus(String command, PrintWriter writer) {
+	    String[] parts = command.split(",");
+	    if (parts.length != 2) {
+	        writer.println("Invalid command format. Expected: GET_SUBSCRIBER_STATUS,subscriberId");
+	        return;
+	    }
+
+	    int subscriberId = Integer.parseInt(parts[1]);
+
 	    try {
-	        List<Subscriber> subscribers = dbHandler.getAllSubscribers();
-	        ObjectMapper objectMapper = new ObjectMapper();
-	        String jsonResponse = objectMapper.writeValueAsString(subscribers);
-
-	        // Debug: Print the JSON being sent
-	        System.out.println("JSON Sent to Client: " + jsonResponse);
-
-	        output.writeObject(jsonResponse);
-	    } catch (Exception e) {
+	        String status = dbHandler.getSubscriberStatus(subscriberId);
+	        System.out.println("Fetched Status for Subscriber ID " + subscriberId + ": " + status); // Debug
+	        writer.println(status); // Send only the status
+	    } catch (SQLException e) {
 	        e.printStackTrace();
-	        output.writeObject("Error fetching subscriber data: " + e.getMessage());
+	        writer.println("Error fetching subscriber status: " + e.getMessage());
 	    }
 	}
 
 
 
+	private void handleSaveSubscriptionHistory(String command, PrintWriter writer) {
+		String[] parts = command.split(",");
+		if (parts.length < 3) {
+			writer.println(
+					"Invalid command format. Expected: SAVE_SUBSCRIPTION_HISTORY,subscriberId,action1,action2,...");
+			return;
+		}
+
+		int subscriberId = Integer.parseInt(parts[1]);
+		List<String> actions = new ArrayList<>(Arrays.asList(parts).subList(2, parts.length));
+
+		System.out.println("Saving subscription history for Subscriber ID " + subscriberId + ": " + actions);
+
+		try {
+			dbHandler.saveSubscriptionHistory(subscriberId, actions);
+			writer.println("Subscription history updated successfully.");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error updating subscription history: " + e.getMessage());
+		}
+	}
+
+	private void handleUpdateSubscriberStatus(String command, PrintWriter writer) {
+		String[] parts = command.split(",");
+		if (parts.length != 3) {
+			writer.println("Invalid command format. Expected: UPDATE_SUBSCRIBER_STATUS,subscriberId,newStatus");
+			return;
+		}
+
+		int subscriberId = Integer.parseInt(parts[1]);
+		String newStatus = parts[2];
+
+		System.out.println("Updating status for Subscriber ID " + subscriberId + " to " + newStatus);
+
+		try {
+			dbHandler.updateSubscriberStatus(subscriberId, newStatus);
+			writer.println("Subscriber status updated successfully.");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error updating subscriber status: " + e.getMessage());
+		}
+	}
 
 }

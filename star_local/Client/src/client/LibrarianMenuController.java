@@ -1,5 +1,7 @@
 package client;
 
+import java.io.IOException;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -75,24 +77,24 @@ public class LibrarianMenuController {
 
 	@FXML
 	private void handleGetSubscriberInfo() {
-	    try {
-	        // Load the FXML
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscriberInformation.fxml"));
-	        Parent root = loader.load();
+		try {
+			// Load the FXML
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscriberInformation.fxml"));
+			Parent root = loader.load();
 
-	        // Set the serverCommunicator in the controller
-	        SubscriberInformationController controller = loader.getController();
-	        controller.setServerCommunicator(serverCommunicator); // Pass the server communicator
+			// Set the serverCommunicator in the controller
+			SubscriberInformationController controller = loader.getController();
+			controller.setServerCommunicator(serverCommunicator); // Pass the server communicator
 
-	        // Show the Subscriber Information screen
-	        Stage stage = new Stage();
-	        stage.setTitle("Subscriber Information");
-	        stage.setScene(new Scene(root));
-	        stage.show();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        showError("Error loading Subscriber Information screen.");
-	    }
+			// Show the Subscriber Information screen
+			Stage stage = new Stage();
+			stage.setTitle("Subscriber Information");
+			stage.setScene(new Scene(root));
+			stage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+			showError("Error loading Subscriber Information screen.");
+		}
 	}
 
 	@FXML
@@ -121,6 +123,27 @@ public class LibrarianMenuController {
 			showError("Error loading register subscriber screen.");
 		}
 	}
+
+	@FXML
+	private void handleChangeSubscriberDetails() {
+	    try {
+	        FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscriberDetailsChange.fxml"));
+	        Parent root = loader.load();
+
+	        // Pass the server communicator to the new controller
+	        SubscriberDetailsChangeController controller = loader.getController();
+	        controller.setServerCommunicator(serverCommunicator);
+
+	        Stage stage = new Stage();
+	        stage.setTitle("Change Subscriber Details");
+	        stage.setScene(new Scene(root));
+	        stage.show();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        showError("Failed to load the Subscriber Details Change screen.");
+	    }
+	}
+
 
 	private void showError(String message) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);

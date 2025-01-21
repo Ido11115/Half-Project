@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="client.SubscriberDetailsChangeController">
+    <children>
+        <TextField fx:id="searchField" layoutX="14.0" layoutY="14.0" prefWidth="200.0" promptText="Enter Subscriber ID" />
+        <Button layoutX="220.0" layoutY="14.0" text="Search" onAction="#handleSearch" />
+
+        <TableView fx:id="historyTable" layoutX="14.0" layoutY="50.0" prefWidth="600.0" prefHeight="200.0">
+            <columns>
+                <TableColumn fx:id="actionColumn" text="Action" prefWidth="300.0" />
+                <TableColumn fx:id="dateColumn" text="Date" prefWidth="200.0" />
+            </columns>
+        </TableView>
+
+        <Label layoutX="14.0" layoutY="270.0" text="Status:" />
+        <ComboBox fx:id="statusComboBox" layoutX="70.0" layoutY="265.0" prefWidth="150.0" />
+
+        <Button layoutX="14.0" layoutY="310.0" text="Add Action" onAction="#handleAddAction" />
+        <Button layoutX="120.0" layoutY="310.0" text="Remove Selected Action" onAction="#handleRemoveAction" />
+        <Button layoutX="270.0" layoutY="310.0" text="Save Changes" onAction="#handleSaveChanges" />
+    </children>
+</AnchorPane>

@@ -17,7 +17,9 @@
 
     <!-- Get Subscriber Info -->
     <Button text="Get Subscriber Information" onAction="#handleGetSubscriberInfo" />
-
+	
+	<Button fx:id="changeSubscriberDetailsButton" layoutX="50" layoutY="200" text="Change Subscriber Details" onAction="#handleChangeSubscriberDetails" />
+	
     <!-- Logout -->
     <Button text="Logout" onAction="#handleLogout" />
 </VBox>
