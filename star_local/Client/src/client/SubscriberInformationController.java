@@ -1,14 +1,14 @@
 package client;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SubscriberInformationController {
 
@@ -27,9 +27,9 @@ public class SubscriberInformationController {
 	@FXML
 	private TableColumn<Subscriber, String> statusColumn;
 	@FXML
-	private TableColumn<Subscriber, String> detailedSubscriptionHistoryColumn;
-	@FXML
 	private TableColumn<Subscriber, String> allReturnDatesColumn;
+	@FXML
+	private TableColumn<Subscriber, String> detailedSubscriptionHistoryColumn;
 
 	private ObservableList<Subscriber> subscriberList = FXCollections.observableArrayList();
 	private ServerCommunicator serverCommunicator;
@@ -44,14 +44,22 @@ public class SubscriberInformationController {
 
 	@FXML
 	private void initialize() {
-		idColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
-		nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-		lastNameColumn.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
-		emailColumn.setCellValueFactory(cellData -> cellData.getValue().emailProperty());
-		statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
-		detailedSubscriptionHistoryColumn
-				.setCellValueFactory(cellData -> cellData.getValue().detailedSubscriptionHistoryProperty());
-		allReturnDatesColumn.setCellValueFactory(cellData -> cellData.getValue().allReturnDatesProperty());
+		// Use direct getters for TableColumn cell value factories
+		idColumn.setCellValueFactory(
+				cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getId()));
+		nameColumn.setCellValueFactory(
+				cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getName()));
+		lastNameColumn.setCellValueFactory(
+				cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getLastName()));
+		emailColumn.setCellValueFactory(
+				cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getEmail()));
+		statusColumn.setCellValueFactory(
+				cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getStatus()));
+		allReturnDatesColumn.setCellValueFactory(
+				cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getAllReturnDates()));
+		detailedSubscriptionHistoryColumn.setCellValueFactory(
+				cellData -> new ReadOnlyStringWrapper(cellData.getValue().getSubscriptionHistory()));
+
 	}
 
 	private void loadSubscriberData() {
@@ -61,33 +69,42 @@ public class SubscriberInformationController {
 		}
 
 		try {
-			Object response = serverCommunicator.sendRequest("GET_SUBSCRIBERS");
+			String response = serverCommunicator.sendRequest("GET_SUBSCRIBERS");
 
-			if (response instanceof String) {
-				String jsonResponse = (String) response;
-
-				// Debug: Print the JSON response received
-				System.out.println("JSON Received: " + jsonResponse);
-
-				// Parse JSON into List of Subscriber objects
-				ObjectMapper objectMapper = new ObjectMapper();
-				List<Subscriber> subscribers = objectMapper.readValue(jsonResponse,
-						new TypeReference<List<Subscriber>>() {
-						});
-
-				// Debug: Print the parsed subscribers
-				subscribers.forEach(subscriber -> System.out.println("Parsed Subscriber: " + subscriber.getName()));
-
-				// Update the TableView
-				subscriberList.setAll(subscribers);
-				subscriberTable.setItems(subscriberList);
-			} else {
-				showError("Unexpected response from server. Please try again.");
+			List<Subscriber> subscribers = parseSubscribers(response);
+			for (Subscriber subscriber : subscribers) {
+				String history = serverCommunicator.getSubscriptionHistory(subscriber.getId());
+				subscriber.setSubscriptionHistory(history);
 			}
+
+			subscriberList.setAll(subscribers);
+			subscriberTable.setItems(subscriberList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			showError("Error loading subscriber data: " + e.getMessage());
 		}
+	}
+
+	private List<Subscriber> parseSubscribers(String data) {
+		List<Subscriber> subscribers = new ArrayList<>();
+		try {
+			Arrays.stream(data.split(";")).forEach(entry -> {
+				String[] details = entry.split(",");
+				if (details.length >= 5) {
+					subscribers.add(new Subscriber(Integer.parseInt(details[0]), // ID
+							details[1], // Name
+							details[2], // Last Name
+							details[3], // Email
+							details[4], // Status
+							details.length > 5 ? details[5] : "" // All Return Dates
+					));
+				}
+			});
+		} catch (Exception e) {
+			System.err.println("Error parsing subscriber data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return subscribers;
 	}
 
 	@FXML

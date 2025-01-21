@@ -1,123 +1,104 @@
 package client;
 
-import javafx.beans.property.*;
-
 public class Subscriber {
-    private final IntegerProperty id;
-    private final StringProperty name;
-    private final StringProperty lastName;
-    private final StringProperty email;
-    private final StringProperty status;
-    private final StringProperty detailedSubscriptionHistory;
-    private final StringProperty allReturnDates;
+	private int id;
+	private String name;
+	private String lastName;
+	private String email;
+	private String status;
+	private String allReturnDates;
+	private String subscriptionHistory;
 
-    // Default constructor for Jackson
-    public Subscriber() {
-        this.id = new SimpleIntegerProperty();
-        this.name = new SimpleStringProperty();
-        this.lastName = new SimpleStringProperty();
-        this.email = new SimpleStringProperty();
-        this.status = new SimpleStringProperty();
-        this.detailedSubscriptionHistory = new SimpleStringProperty();
-        this.allReturnDates = new SimpleStringProperty();
-    }
+	// Default constructor
+	public Subscriber() {
+	}
 
-    // Constructor to initialize all fields
-    public Subscriber(int id, String name, String lastName, String email, String status, 
-                      String detailedSubscriptionHistory, String latestReturnDates) {
-        this.id = new SimpleIntegerProperty(id);
-        this.name = new SimpleStringProperty(name);
-        this.lastName = new SimpleStringProperty(lastName);
-        this.email = new SimpleStringProperty(email);
-        this.status = new SimpleStringProperty(status);
-        this.detailedSubscriptionHistory = new SimpleStringProperty(detailedSubscriptionHistory);
-        this.allReturnDates = new SimpleStringProperty(latestReturnDates);
-    }
+	// Constructor to initialize all fields
+	public Subscriber(int id, String name, String lastName, String email, String status, String allReturnDates) {
+		this.id = id;
+		this.name = name;
+		this.lastName = lastName;
+		this.email = email;
+		this.status = status;
+		this.allReturnDates = allReturnDates;
+	}
 
-    // Getters for JavaFX properties (used for TableView binding)
-    public IntegerProperty idProperty() {
-        return id;
-    }
+	// Getters and setters
+	public int getId() {
+		return id;
+	}
 
-    public StringProperty nameProperty() {
-        return name;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public StringProperty lastNameProperty() {
-        return lastName;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public StringProperty emailProperty() {
-        return email;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public StringProperty statusProperty() {
-        return status;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public StringProperty detailedSubscriptionHistoryProperty() {
-        return detailedSubscriptionHistory;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public StringProperty allReturnDatesProperty() {
-        return allReturnDates;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    // Getters for values
-    public int getId() {
-        return id.get();
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getName() {
-        return name.get();
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public String getLastName() {
-        return lastName.get();
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public String getEmail() {
-        return email.get();
-    }
+	public String getAllReturnDates() {
+		return allReturnDates;
+	}
 
-    public String getStatus() {
-        return status.get();
-    }
+	public void setAllReturnDates(String allReturnDates) {
+		this.allReturnDates = allReturnDates;
+	}
 
-    public String getDetailedSubscriptionHistory() {
-        return detailedSubscriptionHistory.get();
-    }
+	public String getSubscriptionHistory() {
+		return subscriptionHistory;
+	}
 
-    public String getallReturnDates() {
-        return allReturnDates.get();
-    }
+	public void setSubscriptionHistory(String subscriptionHistory) {
+		this.subscriptionHistory = subscriptionHistory;
+	}
 
-    // Setters for values
-    public void setId(int id) {
-        this.id.set(id);
-    }
+	// Convert string to Subscriber
+	public static Subscriber fromString(String data) {
+		String[] parts = data.split(",");
+		if (parts.length < 5) {
+			throw new IllegalArgumentException("Invalid subscriber data format.");
+		}
+		int id = Integer.parseInt(parts[0]);
+		String name = parts[1];
+		String lastName = parts[2];
+		String email = parts[3];
+		String status = parts[4];
+		String allReturnDates = parts.length > 5 ? parts[5] : "";
+		return new Subscriber(id, name, lastName, email, status, allReturnDates);
+	}
 
-    public void setName(String name) {
-        this.name.set(name);
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName.set(lastName);
-    }
-
-    public void setEmail(String email) {
-        this.email.set(email);
-    }
-
-    public void setStatus(String status) {
-        this.status.set(status);
-    }
-
-    public void setDetailedSubscriptionHistory(String detailedSubscriptionHistory) {
-        this.detailedSubscriptionHistory.set(detailedSubscriptionHistory);
-    }
-
-    public void setallReturnDates(String allReturnDates) {
-        this.allReturnDates.set(allReturnDates);
-    }
+	// Convert Subscriber to string
+	@Override
+	public String toString() {
+		return id + "," + name + "," + lastName + "," + email + "," + status + ","
+				+ (allReturnDates != null ? allReturnDates : "");
+	}
 }
