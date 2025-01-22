@@ -1,17 +1,23 @@
 package client;
 
 import java.io.IOException;
-
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import javafx.scene.Node;
 
 public class LibrarianMenuController {
 
 	private ServerCommunicator serverCommunicator;
+	
+	@FXML
+	private Button logoutButton;
+
 
 	public void setServerCommunicator(ServerCommunicator serverCommunicator) {
 		this.serverCommunicator = serverCommunicator;
@@ -97,13 +103,34 @@ public class LibrarianMenuController {
 		}
 	}
 
-	@FXML
-	private void handleLogout() {
-		System.out.println("Logging out...");
-		Stage currentStage = (Stage) ((javafx.scene.Node) null).getScene().getWindow();
-		currentStage.close();
-		// Optionally, return to the login screen
-	}
+	 @FXML
+	    private void handleLogout(ActionEvent event) {
+	        try {
+	            System.out.println("Logging out...");
+
+	            // Get the current stage from the event source
+	            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+	            // Close the current stage
+	            currentStage.close();
+
+	            // Load the login screen
+	            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+	            Parent root = loader.load();
+
+	            Stage loginStage = new Stage();
+	            loginStage.setTitle("Login");
+	            loginStage.setScene(new Scene(root));
+	            loginStage.show();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            showError("Error during logout: " + e.getMessage());
+	        }
+	    }
+
+
+
+
 
 	@FXML
 	private void loadRegisterSubscriberScreen() {
@@ -126,24 +153,63 @@ public class LibrarianMenuController {
 
 	@FXML
 	private void handleChangeSubscriberDetails() {
-	    try {
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscriberDetailsChange.fxml"));
-	        Parent root = loader.load();
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscriberDetailsChange.fxml"));
+			Parent root = loader.load();
 
-	        // Pass the server communicator to the new controller
-	        SubscriberDetailsChangeController controller = loader.getController();
-	        controller.setServerCommunicator(serverCommunicator);
+			// Pass the server communicator to the new controller
+			SubscriberDetailsChangeController controller = loader.getController();
+			controller.setServerCommunicator(serverCommunicator);
 
-	        Stage stage = new Stage();
-	        stage.setTitle("Change Subscriber Details");
-	        stage.setScene(new Scene(root));
-	        stage.show();
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        showError("Failed to load the Subscriber Details Change screen.");
-	    }
+			Stage stage = new Stage();
+			stage.setTitle("Change Subscriber Details");
+			stage.setScene(new Scene(root));
+			stage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+			showError("Failed to load the Subscriber Details Change screen.");
+		}
 	}
 
+	@FXML
+	private void handleGenerateSubscribersStatus() {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscribersStatusGraph.fxml"));
+			Parent root = loader.load();
+
+			// Pass the necessary data to the controller if required
+			SubscribersStatusGraphController controller = loader.getController();
+			controller.setServerCommunicator(serverCommunicator); // If server data is needed
+
+			Stage stage = new Stage();
+			stage.setTitle("Subscribers Status Graph");
+			stage.setScene(new Scene(root));
+			stage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+			showError("Error loading Subscribers Status Graph screen.");
+		}
+	}
+
+	@FXML
+	private void handleGenerateLoansTimeGraph() {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("LoansTimeGraph.fxml"));
+			Parent root = loader.load();
+
+			// Pass the server communicator to the new controller
+			LoansTimeGraphController controller = loader.getController();
+			controller.setServerCommunicator(serverCommunicator);
+
+			Stage stage = new Stage();
+			stage.setTitle("Loans-Time Graph");
+			stage.setScene(new Scene(root));
+			stage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+			showError("Error loading Loans-Time Graph screen.");
+		}
+	}
 
 	private void showError(String message) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);

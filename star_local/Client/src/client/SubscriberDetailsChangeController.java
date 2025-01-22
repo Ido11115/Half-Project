@@ -36,29 +36,50 @@ public class SubscriberDetailsChangeController {
 	    historyTable.setEditable(true);
 
 	    // Bind the columns to the SubscriptionAction properties
-	    actionColumn.setCellValueFactory(cellData -> cellData.getValue().actionProperty());
-	    dateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
+	    actionColumn.setCellValueFactory(cellData -> {
+	        if (cellData.getValue() != null) {
+	            return cellData.getValue().actionProperty();
+	        } else {
+	            return null; // Debug: Handle null values gracefully
+	        }
+	    });
+
+	    dateColumn.setCellValueFactory(cellData -> {
+	        if (cellData.getValue() != null) {
+	            return cellData.getValue().dateProperty();
+	        } else {
+	            return null; // Debug: Handle null values gracefully
+	        }
+	    });
 
 	    // Allow inline editing for actions
 	    actionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 	    actionColumn.setOnEditCommit(event -> {
 	        SubscriptionAction action = event.getRowValue();
-	        action.setAction(event.getNewValue());
-	        System.out.println("Updated Action: " + action.getAction()); // Debug log
+	        if (action != null) {
+	            action.setAction(event.getNewValue());
+	            System.out.println("Updated Action: " + action.getAction());
+	        }
 	    });
 
 	    // Allow inline editing for dates
 	    dateColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 	    dateColumn.setOnEditCommit(event -> {
 	        SubscriptionAction action = event.getRowValue();
-	        action.setDate(event.getNewValue());
-	        System.out.println("Updated Date: " + action.getDate()); // Debug log
+	        if (action != null) {
+	            action.setDate(event.getNewValue());
+	            System.out.println("Updated Date: " + action.getDate());
+	        }
 	    });
 
 	    // Populate status options for the ComboBox
 	    statusComboBox.setItems(FXCollections.observableArrayList("Active", "Inactive"));
-	}
 
+	    // Debug: Log ComboBox value changes
+	    statusComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+	        System.out.println("Status ComboBox changed: " + newVal);
+	    });
+	}
 
 
 	@FXML
@@ -68,18 +89,16 @@ public class SubscriberDetailsChangeController {
 
 	        // Fetch subscription history
 	        String historyResponse = serverCommunicator.getSubscriptionHistory(subscriberId);
-	        List<SubscriptionAction> history = parseSubscriptionHistory(historyResponse);
+	        System.out.println("History Response: " + historyResponse); // Debug
+	        List<SubscriptionAction> newHistory = parseSubscriptionHistory(historyResponse);
 
-	        // Debug: Log fetched history
-	        System.out.println("Fetched Subscription History: " + historyResponse);
-
-	        // Update the table with subscription history
-	        historyList.setAll(history);
+	        // Update the table
+	        historyList.setAll(newHistory);
 	        historyTable.setItems(historyList);
 
 	        // Fetch subscriber status
 	        String statusResponse = serverCommunicator.getSubscriberStatus(subscriberId);
-	        System.out.println("Fetched Status: " + statusResponse); // Debug log
+	        System.out.println("Status Response: " + statusResponse); // Debug
 	        statusComboBox.setValue(statusResponse);
 
 	    } catch (NumberFormatException e) {
@@ -91,16 +110,32 @@ public class SubscriberDetailsChangeController {
 	}
 
 
+	@FXML
+	private void handleClear() {
+		try {
+			// Clear the search field
+			searchField.clear();
+
+			// Clear the history table
+			historyList.clear();
+			historyTable.setItems(historyList);
+
+			// Reset the status combo box
+			statusComboBox.setValue(null);
+
+			System.out.println("Clear action executed.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@FXML
 	private void handleAddAction() {
-	    SubscriptionAction newAction = new SubscriptionAction("New Action", "Enter Date");
-	    historyList.add(newAction);
-	    historyTable.setItems(historyList);
-	    historyTable.getSelectionModel().select(newAction); // Optional: Auto-select the new row
+		SubscriptionAction newAction = new SubscriptionAction("New Action", "Enter Date");
+		historyList.add(newAction);
+		historyTable.setItems(historyList);
+		historyTable.getSelectionModel().select(newAction); // Optional: Auto-select the new row
 	}
-
-
 
 	@FXML
 	private void handleRemoveAction() {
@@ -131,14 +166,20 @@ public class SubscriberDetailsChangeController {
 	}
 
 	private List<SubscriptionAction> parseSubscriptionHistory(String data) {
-	    List<SubscriptionAction> actions = new ArrayList<>();
-	    for (String entry : data.split("\n")) {
-	        String[] parts = entry.split(",");
-	        if (parts.length == 2) {
-	            actions.add(new SubscriptionAction(parts[0], parts[1])); // Action, Date
+	    List<SubscriptionAction> history = new ArrayList<>();
+	    try {
+	        String[] entries = data.split(";");
+	        for (String entry : entries) {
+	            String[] details = entry.split(",");
+	            if (details.length == 2) {
+	                history.add(new SubscriptionAction(details[0], details[1]));
+	            }
 	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        showError("Error parsing subscription history data.");
 	    }
-	    return actions;
+	    return history;
 	}
 
 

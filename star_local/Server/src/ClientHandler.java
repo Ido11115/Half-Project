@@ -41,13 +41,17 @@ public class ClientHandler implements Runnable {
 					handleGetSubscribersRequest(writer);
 				} else if (command.startsWith("GET_SUBSCRIPTION_HISTORY")) {
 					handleGetSubscriptionHistory(command, writer);
+				} else if (command.equals("GET_SUBSCRIBER_STATUS_COUNTS_BY_MONTH")) {
+					handleGetSubscriberStatusCountsByMonth(writer);
 				} else if (command.startsWith("GET_SUBSCRIBER_STATUS")) {
 					handleGetSubscriberStatus(command, writer);
 				} else if (command.startsWith("SAVE_SUBSCRIPTION_HISTORY")) {
 					handleSaveSubscriptionHistory(command, writer);
 				} else if (command.startsWith("UPDATE_SUBSCRIBER_STATUS")) {
 					handleUpdateSubscriberStatus(command, writer);
-				}else {
+				} else if (command.equals("GET_LOANS_TIME")) {
+					handleGetLoansTime(writer);
+				} else {
 					writer.println("Unknown command");
 				}
 			}
@@ -148,6 +152,11 @@ public class ClientHandler implements Runnable {
 				return;
 			}
 
+			if (!dbHandler.isBookAvailable(bookId)) {
+				writer.println("No available copies for the requested book.");
+				return;
+			}
+
 			dbHandler.loanBookToSubscriber(subscriberId, bookId, loanDate, returnDate);
 			writer.println("Loan successful");
 		} catch (Exception e) {
@@ -200,12 +209,10 @@ public class ClientHandler implements Runnable {
 		}
 
 		int subscriberId = Integer.parseInt(parts[1]);
-		System.out.println("Fetching subscription history for Subscriber ID: " + subscriberId);
 
 		try {
-			String history = dbHandler.getSubscriptionHistory(subscriberId);
-			System.out.println("History for Subscriber ID " + subscriberId + ": " + history);
-			writer.println(history.isEmpty() ? "No history available for this subscriber." : history);
+			String history = dbHandler.getSubscriptionHistory(subscriberId); // Returns history as a delimited string
+			writer.println(history.isEmpty() ? "No history available" : history);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			writer.println("Error fetching subscription history: " + e.getMessage());
@@ -213,25 +220,22 @@ public class ClientHandler implements Runnable {
 	}
 
 	private void handleGetSubscriberStatus(String command, PrintWriter writer) {
-	    String[] parts = command.split(",");
-	    if (parts.length != 2) {
-	        writer.println("Invalid command format. Expected: GET_SUBSCRIBER_STATUS,subscriberId");
-	        return;
-	    }
+		String[] parts = command.split(",");
+		if (parts.length != 2) {
+			writer.println("Invalid command format. Expected: GET_SUBSCRIBER_STATUS,subscriberId");
+			return;
+		}
 
-	    int subscriberId = Integer.parseInt(parts[1]);
+		int subscriberId = Integer.parseInt(parts[1]);
 
-	    try {
-	        String status = dbHandler.getSubscriberStatus(subscriberId);
-	        System.out.println("Fetched Status for Subscriber ID " + subscriberId + ": " + status); // Debug
-	        writer.println(status); // Send only the status
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        writer.println("Error fetching subscriber status: " + e.getMessage());
-	    }
+		try {
+			String status = dbHandler.getSubscriberStatus(subscriberId); // Returns "Active" or "Inactive"
+			writer.println(status);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error fetching subscriber status: " + e.getMessage());
+		}
 	}
-
-
 
 	private void handleSaveSubscriptionHistory(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
@@ -273,6 +277,28 @@ public class ClientHandler implements Runnable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			writer.println("Error updating subscriber status: " + e.getMessage());
+		}
+	}
+
+	private void handleGetSubscriberStatusCountsByMonth(PrintWriter writer) {
+		try {
+			String statusCounts = dbHandler.getSubscriberStatusCountsByMonth();
+			System.out.println("Subscriber Status Counts by Month: " + statusCounts); // Debug
+			writer.println(statusCounts);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error fetching subscriber status counts by month: " + e.getMessage());
+		}
+	}
+
+	private void handleGetLoansTime(PrintWriter writer) {
+		try {
+			String loanData = dbHandler.getLoansTime();
+			System.out.println("Loan Data: " + loanData); // Debug log
+			writer.println(loanData);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error fetching loan data: " + e.getMessage());
 		}
 	}
 
