@@ -3,9 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TabPane xmlns:fx="http://javafx.com/fxml" fx:controller="client.LoginController" prefWidth="400" prefHeight="300">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="client.LoginController" >
     <!-- Login Tab -->
-    <Tab text="Login">
         <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
             <Label text="Login as:" />
             <HBox spacing="10">
@@ -17,19 +16,6 @@
             <Label fx:id="errorLabel" text="" style="-fx-text-fill: red;" />
             <Button text="Login" onAction="#handleLogin" />
         </VBox>
-    </Tab>
 
-    <!-- Register Tab -->
-    <Tab text="Register">
-        <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
-            <Label text="Register as Subscriber" />
-            <TextField fx:id="subscriberIdField" promptText="Subscriber ID" />
-            <TextField fx:id="nameField" promptText="Name" />
-            <TextField fx:id="emailField" promptText="Email" />
-            <TextField fx:id="phoneField" promptText="Phone Number" />
-            <PasswordField fx:id="registerPasswordField" promptText="Password" />
-            <Label fx:id="registerErrorLabel" text="" style="-fx-text-fill: red;" />
-            <Button text="Register" onAction="#handleRegister" />
-        </VBox>
-    </Tab>
-</TabPane>
+    
+</AnchorPane>

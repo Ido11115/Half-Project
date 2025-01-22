@@ -154,7 +154,7 @@ public class DBHandler {
 	}
 
 	public boolean verifySubscriberLogin(String name, String password) throws SQLException {
-		String query = "SELECT * FROM subscribe WHERE subscriber_name = ? AND password = ?";
+		String query = "SELECT * FROM subscribe WHERE user_name = ? AND password = ?";
 		try (Connection connection = connect();
 				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 			preparedStatement.setString(1, name);
@@ -179,7 +179,7 @@ public class DBHandler {
 	}
 
 	public boolean validateSubscriberLogin(String username, String password) throws SQLException {
-		String query = "SELECT * FROM subscribe WHERE LOWER(subscriber_name) = LOWER(?) AND password = ?";
+		String query = "SELECT * FROM subscribe WHERE LOWER(user_name) = LOWER(?) AND password = ?";
 		try (Connection connection = connect();
 				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 			preparedStatement.setString(1, username);
