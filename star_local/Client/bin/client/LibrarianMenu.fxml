@@ -3,23 +3,44 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="client.LibrarianMenuController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
-    <Label text="Librarian Menu" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+<VBox xmlns:fx="http://javafx.com/fxml"
+	fx:controller="client.LibrarianMenuController" spacing="10"
+	alignment="CENTER" style="-fx-padding: 20;">
+	<Label text="Librarian Menu"
+		style="-fx-font-size: 18px; -fx-font-weight: bold;" />
 
-    <!-- Register Subscriber -->
-    <Button text="Register a New Subscriber" onAction="#handleRegisterSubscriber" />
+	<!-- Register Subscriber -->
+	<Button text="Register a New Subscriber"
+		onAction="#handleRegisterSubscriber" />
 
-    <!-- Loan Book -->
-    <Button text="Loan Book to a Subscriber" onAction="#handleLoanBook" />
+	<!-- Loan Book -->
+	<Button text="Loan Book to a Subscriber"
+		onAction="#handleLoanBook" />
 
-    <!-- Return Book -->
-    <Button text="Return Book from Subscriber" onAction="#handleReturnBook" />
+	<!-- Return Book -->
+	<Button text="Return Book from Subscriber"
+		onAction="#handleReturnBook" />
 
-    <!-- Get Subscriber Info -->
-    <Button text="Get Subscriber Information" onAction="#handleGetSubscriberInfo" />
-	
-	<Button fx:id="changeSubscriberDetailsButton" layoutX="50" layoutY="200" text="Change Subscriber Details" onAction="#handleChangeSubscriberDetails" />
-	
-    <!-- Logout -->
-    <Button text="Logout" onAction="#handleLogout" />
+	<!-- Get Subscriber Info -->
+	<Button text="Get Subscriber Information"
+		onAction="#handleGetSubscriberInfo" />
+
+	<Button fx:id="changeSubscriberDetailsButton" layoutX="50"
+		layoutY="200" text="Change Subscriber Details"
+		onAction="#handleChangeSubscriberDetails" />
+
+	<Button fx:id="generateSubscribersStatusButton" layoutX="50"
+		layoutY="200" text="Generate Subscribers Status"
+		onAction="#handleGenerateSubscribersStatus" />
+
+	<Button fx:id="generateLoansTimeGraphButton" layoutX="50"
+		layoutY="300" text="Generate Loans-Time Graph"
+		onAction="#handleGenerateLoansTimeGraph" />
+
+
+	<!-- Logout -->
+<Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" />
+
+
+
 </VBox>

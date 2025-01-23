@@ -63,49 +63,61 @@ public class SubscriberInformationController {
 	}
 
 	private void loadSubscriberData() {
-		if (serverCommunicator == null) {
-			showError("Server communicator is not initialized.");
-			return;
-		}
+	    if (serverCommunicator == null) {
+	        showError("Server communicator is not initialized.");
+	        return;
+	    }
 
-		try {
-			String response = serverCommunicator.sendRequest("GET_SUBSCRIBERS");
+	    try {
+	        String response = serverCommunicator.sendRequest("GET_SUBSCRIBERS");
 
-			List<Subscriber> subscribers = parseSubscribers(response);
-			for (Subscriber subscriber : subscribers) {
-				String history = serverCommunicator.getSubscriptionHistory(subscriber.getId());
-				subscriber.setSubscriptionHistory(history);
-			}
+	        List<Subscriber> subscribers = parseSubscribers(response);
+	        System.out.println("Parsed subscribers count: " + subscribers.size());
 
-			subscriberList.setAll(subscribers);
-			subscriberTable.setItems(subscriberList);
-		} catch (Exception e) {
-			e.printStackTrace();
-			showError("Error loading subscriber data: " + e.getMessage());
-		}
+	        for (Subscriber subscriber : subscribers) {
+	            String history = serverCommunicator.getSubscriptionHistory(subscriber.getId());
+	            subscriber.setSubscriptionHistory(history);
+	        }
+
+	        subscriberList.setAll(subscribers);
+	        subscriberTable.setItems(subscriberList);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        showError("Error loading subscriber data: " + e.getMessage());
+	    }
 	}
+
 
 	private List<Subscriber> parseSubscribers(String data) {
-		List<Subscriber> subscribers = new ArrayList<>();
-		try {
-			Arrays.stream(data.split(";")).forEach(entry -> {
-				String[] details = entry.split(",");
-				if (details.length >= 5) {
-					subscribers.add(new Subscriber(Integer.parseInt(details[0]), // ID
-							details[1], // Name
-							details[2], // Last Name
-							details[3], // Email
-							details[4], // Status
-							details.length > 5 ? details[5] : "" // All Return Dates
-					));
-				}
-			});
-		} catch (Exception e) {
-			System.err.println("Error parsing subscriber data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return subscribers;
+	    List<Subscriber> subscribers = new ArrayList<>();
+	    try {
+	        Arrays.stream(data.split(";")).forEach(entry -> {
+	            String[] details = entry.split(",");
+	            try {
+	                if (details.length >= 5) {
+	                    subscribers.add(new Subscriber(
+	                        Integer.parseInt(details[0]), // ID
+	                        details[1],                  // Name
+	                        details[2],                  // Last Name
+	                        details[3],                  // Email
+	                        details[4],                  // Status
+	                        details.length > 5 ? details[5] : "" // All Return Dates
+	                    ));
+	                } else {
+	                    System.err.println("Skipping incomplete subscriber data: " + entry);
+	                }
+	            } catch (Exception e) {
+	                System.err.println("Error parsing subscriber entry: " + entry);
+	                e.printStackTrace();
+	            }
+	        });
+	    } catch (Exception e) {
+	        System.err.println("Error parsing subscriber data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return subscribers;
 	}
+
 
 	@FXML
 	private void handleSearch() {

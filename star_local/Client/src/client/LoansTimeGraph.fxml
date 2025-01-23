@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="client.LoansTimeGraphController">
+    <children>
+        <BarChart fx:id="loansBarChart" layoutX="20.0" layoutY="20.0" prefWidth="600.0" prefHeight="400.0">
+            <xAxis>
+                <CategoryAxis fx:id="xAxis" label="Subscribers" />
+            </xAxis>
+            <yAxis>
+                <NumberAxis fx:id="yAxis" label="Loan Duration (Days)" />
+            </yAxis>
+        </BarChart>
+    </children>
+</AnchorPane>

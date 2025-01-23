@@ -6,6 +6,7 @@ public class DBHandler {
 	private static final String DB_URL = "jdbc:mysql://localhost:3306/world?useSSL=false&serverTimezone=UTC";
 	private static final String USER = "root";
 	private static final String PASSWORD = "Aa123456";
+	private int currentSubscriberId = -1;
 
 	public static void main(String[] args) {
 		DBHandler dbHandler = new DBHandler();
@@ -32,33 +33,35 @@ public class DBHandler {
 	}
 
 	public String getAllSubscribersAsString() throws SQLException {
-		String query = """
-				    SELECT s.subscriber_id, s.subscriber_name, s.last_name, s.subscriber_email, s.status,
-				           GROUP_CONCAT(l.return_date SEPARATOR '\n') AS all_return_dates
-				    FROM subscribe s
-				    LEFT JOIN loans l ON s.subscriber_id = l.subscriber_id
-				    GROUP BY s.subscriber_id, s.subscriber_name, s.last_name, s.subscriber_email, s.status
-				""";
+	    String query = """
+	        SELECT s.subscriber_id, 
+	               s.subscriber_name, 
+	               COALESCE(s.last_name, '') AS last_name, 
+	               s.subscriber_email, 
+	               s.status,
+	               COALESCE(GROUP_CONCAT(l.return_date SEPARATOR '\n'), '') AS all_return_dates
+	        FROM subscribe s
+	        LEFT JOIN loans l ON s.subscriber_id = l.subscriber_id
+	        GROUP BY s.subscriber_id, s.subscriber_name, s.last_name, s.subscriber_email, s.status
+	    """;
 
-		StringBuilder result = new StringBuilder();
+	    StringBuilder result = new StringBuilder();
 
-		try (Connection connection = connect();
-				PreparedStatement preparedStatement = connection.prepareStatement(query);
-				ResultSet resultSet = preparedStatement.executeQuery()) {
-			while (resultSet.next()) {
-				result.append(resultSet.getInt("subscriber_id")).append(",")
-						.append(resultSet.getString("subscriber_name")).append(",")
-						.append(resultSet.getString("last_name") != null ? resultSet.getString("last_name") : "")
-						.append(",").append(resultSet.getString("subscriber_email")).append(",")
-						.append(resultSet.getString("status")).append(",")
-						.append(resultSet.getString("all_return_dates") != null
-								? resultSet.getString("all_return_dates")
-								: "")
-						.append(";");
-			}
-		}
-		return result.toString();
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query);
+	         ResultSet resultSet = preparedStatement.executeQuery()) {
+	        while (resultSet.next()) {
+	            result.append(resultSet.getInt("subscriber_id")).append(",")
+	                  .append(resultSet.getString("subscriber_name")).append(",")
+	                  .append(resultSet.getString("last_name")).append(",")
+	                  .append(resultSet.getString("subscriber_email")).append(",")
+	                  .append(resultSet.getString("status")).append(",")
+	                  .append(resultSet.getString("all_return_dates")).append(";");
+	        }
+	    }
+	    return result.toString();
 	}
+
 
 	public void addSubscriptionHistory(int subscriberId, String action) throws SQLException {
 		String query = "INSERT INTO detailed_subscription_history (subscriber_id, action, action_date) VALUES (?, ?, NOW())";
@@ -73,42 +76,38 @@ public class DBHandler {
 	}
 
 	public String getSubscriptionHistory(int subscriberId) throws SQLException {
-	    String query = "SELECT action, action_date FROM detailed_subscription_history WHERE subscriber_id = ? ORDER BY action_date DESC";
-	    StringBuilder history = new StringBuilder();
+		String query = """
+				    SELECT action, action_date FROM detailed_subscription_history
+				    WHERE subscriber_id = ? ORDER BY action_date DESC
+				""";
+		StringBuilder history = new StringBuilder();
 
-	    try (Connection connection = connect();
-	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-	        preparedStatement.setInt(1, subscriberId);
-
-	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-	            while (resultSet.next()) {
-	                history.append(resultSet.getString("action"))
-	                       .append(",") // Delimit action and date with a comma
-	                       .append(resultSet.getTimestamp("action_date"))
-	                       .append("\n"); // Separate each row with a newline
-	            }
-	        }
-	    }
-	    return history.toString().trim(); // Return formatted string
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setInt(1, subscriberId);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					history.append(resultSet.getString("action")).append(",")
+							.append(resultSet.getTimestamp("action_date")).append(";");
+				}
+			}
+		}
+		return history.toString().trim();
 	}
 
 	public String getSubscriberStatus(int subscriberId) throws SQLException {
-	    String query = "SELECT status FROM subscribe WHERE subscriber_id = ?";
-	    try (Connection connection = connect();
-	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-	        preparedStatement.setInt(1, subscriberId);
-
-	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-	            if (resultSet.next()) {
-	                return resultSet.getString("status"); // Return only the status
-	            }
-	        }
-	    }
-	    return "Unknown"; // Default if no subscriber found
+		String query = "SELECT status FROM subscribe WHERE subscriber_id = ?";
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setInt(1, subscriberId);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				if (resultSet.next()) {
+					return resultSet.getString("status"); // "Active" or "Inactive"
+				}
+			}
+		}
+		return "Unknown";
 	}
-
-
-
 
 	public void saveSubscriptionHistory(int subscriberId, List<String> actions) throws SQLException {
 		String deleteQuery = "DELETE FROM detailed_subscription_history WHERE subscriber_id = ?";
@@ -154,7 +153,7 @@ public class DBHandler {
 	}
 
 	public boolean verifySubscriberLogin(String name, String password) throws SQLException {
-		String query = "SELECT * FROM subscribe WHERE subscriber_name = ? AND password = ?";
+		String query = "SELECT * FROM subscribe WHERE user_name = ? AND password = ?";
 		try (Connection connection = connect();
 				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 			preparedStatement.setString(1, name);
@@ -178,22 +177,20 @@ public class DBHandler {
 		}
 	}
 
-	public boolean validateSubscriberLogin(String username, String password) throws SQLException {
-		String query = "SELECT * FROM subscribe WHERE LOWER(subscriber_name) = LOWER(?) AND password = ?";
-		try (Connection connection = connect();
-				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-			preparedStatement.setString(1, username);
-			preparedStatement.setString(2, password);
+	public int validateSubscriberLogin(String username, String password) throws SQLException {
+	    String query = "SELECT subscriber_id FROM subscribe WHERE LOWER(user_name) = LOWER(?) AND password = ?";
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        preparedStatement.setString(1, username);
+	        preparedStatement.setString(2, password);
 
-			System.out
-					.println("Executing query: " + query + " with Username=" + username + " and Password=" + password);
-
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				boolean found = resultSet.next();
-				System.out.println("Login validation result for Username=" + username + ": " + found);
-				return found;
-			}
-		}
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            if (resultSet.next()) {
+	                return resultSet.getInt("subscriber_id"); // Return subscriber ID if login is successful
+	            }
+	        }
+	    }
+	    return -1; // Return -1 if login fails
 	}
 
 	public boolean validateLibrarianLogin(String username, String password) throws SQLException {
@@ -218,6 +215,23 @@ public class DBHandler {
 			System.out.println("Book loaned to subscriber: " + subscriberId);
 		}
 	}
+
+	public boolean isBookAvailable(int bookId) throws SQLException {
+	    String query = "SELECT available_copies FROM books WHERE id = ?";
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        preparedStatement.setInt(1, bookId);
+
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            if (resultSet.next()) {
+	                return resultSet.getInt("available_copies") > 0;
+	            }
+	        }
+	    }
+	    return false; // Default to unavailable
+	}
+
+
 
 	public void returnBookFromSubscriber(int subscriberId, int bookId) throws SQLException {
 		String deleteLoanQuery = "DELETE FROM loans WHERE subscriber_id = ? AND book_id = ?";
@@ -283,19 +297,21 @@ public class DBHandler {
 	}
 
 	public boolean isSubscriberActive(int subscriberId) throws SQLException {
-		String query = "SELECT status FROM subscribe WHERE subscriber_id = ?";
-		try (Connection connection = connect();
-				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-			preparedStatement.setInt(1, subscriberId);
+	    String query = "SELECT status FROM subscribe WHERE subscriber_id = ?";
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        preparedStatement.setInt(1, subscriberId);
 
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				if (resultSet.next()) {
-					return "Active".equalsIgnoreCase(resultSet.getString("status"));
-				}
-			}
-		}
-		return false;
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            if (resultSet.next()) {
+	                return "active".equalsIgnoreCase(resultSet.getString("status"));
+	            }
+	        }
+	    }
+	    return false; // Default to inactive if not found
 	}
+
+
 
 	public boolean isLoanExists(int subscriberId, int bookId) throws SQLException {
 		String query = "SELECT COUNT(*) FROM loans WHERE subscriber_id = ? AND book_id = ?";
@@ -316,17 +332,327 @@ public class DBHandler {
 	public void loanBookToSubscriber(int subscriberId, int bookId, String loanDate, String returnDate)
 			throws SQLException {
 		String insertLoanQuery = "INSERT INTO loans (subscriber_id, book_id, loan_date, return_date) VALUES (?, ?, ?, ?)";
+		String decrementCopiesQuery = "UPDATE books SET available_copies = available_copies - 1 WHERE id = ?";
 
 		try (Connection connection = connect();
-				PreparedStatement loanStmt = connection.prepareStatement(insertLoanQuery)) {
+				PreparedStatement loanStmt = connection.prepareStatement(insertLoanQuery);
+				PreparedStatement decrementStmt = connection.prepareStatement(decrementCopiesQuery)) {
+
+			connection.setAutoCommit(false);
+
+			// Insert loan record
 			loanStmt.setInt(1, subscriberId);
 			loanStmt.setInt(2, bookId);
 			loanStmt.setString(3, loanDate);
 			loanStmt.setString(4, returnDate);
 			loanStmt.executeUpdate();
 
-			addSubscriptionHistory(subscriberId, "Loaned book ID: " + bookId + " due by " + returnDate);
+			// Decrement available copies
+			decrementStmt.setInt(1, bookId);
+			decrementStmt.executeUpdate();
+
+			connection.commit();
 			System.out.println("Book loaned to subscriber: " + subscriberId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
 		}
 	}
+
+	public List<Integer> getDelinquentSubscribers() throws SQLException {
+		String query = """
+				    SELECT DISTINCT l.subscriber_id
+				    FROM loans l
+				    JOIN subscribe s ON l.subscriber_id = s.subscriber_id
+				    WHERE l.return_date < CURDATE() AND s.status = 'active'
+				""";
+
+		List<Integer> delinquentSubscribers = new ArrayList<>();
+
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(query);
+				ResultSet resultSet = preparedStatement.executeQuery()) {
+			while (resultSet.next()) {
+				delinquentSubscribers.add(resultSet.getInt("subscriber_id"));
+			}
+		}
+
+		return delinquentSubscribers;
+	}
+
+	public void updateSubscriberStatusToInactive(int subscriberId) throws SQLException {
+		String query = "UPDATE subscribe SET status = 'inactive' WHERE subscriber_id = ?";
+
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setInt(1, subscriberId);
+			preparedStatement.executeUpdate();
+		}
+	}
+
+	public String getSubscriberStatusCountsByMonth() throws SQLException {
+		String query = """
+				    SELECT status, DATE_FORMAT(CURDATE(), '%Y-%m') AS month, COUNT(*) AS count
+				    FROM subscribe
+				    GROUP BY status, month
+				    ORDER BY month, status
+				""";
+
+		StringBuilder result = new StringBuilder();
+
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(query);
+				ResultSet resultSet = preparedStatement.executeQuery()) {
+			while (resultSet.next()) {
+				result.append(resultSet.getString("status")).append(",").append(resultSet.getString("month"))
+						.append(",").append(resultSet.getInt("count")).append(";");
+			}
+		}
+		return result.toString().trim();
+	}
+
+	public String getLoansTime() throws SQLException {
+		String query = """
+				    SELECT s.subscriber_name, b.name AS book_name,
+				           DATEDIFF(COALESCE(l.return_date, CURDATE()), l.loan_date) AS loan_days
+				    FROM loans l
+				    JOIN subscribe s ON l.subscriber_id = s.subscriber_id
+				    JOIN books b ON l.book_id = b.id
+				""";
+
+		StringBuilder result = new StringBuilder();
+
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(query);
+				ResultSet resultSet = preparedStatement.executeQuery()) {
+			while (resultSet.next()) {
+				result.append(resultSet.getString("subscriber_name")).append(",")
+						.append(resultSet.getString("book_name")).append(",").append(resultSet.getInt("loan_days"))
+						.append(";");
+			}
+		}
+		return result.toString().trim(); // Example: "John,The Great Gatsby,15;Jane,1984,30"
+	}
+
+	public String searchBooks(String query) throws SQLException {
+	    String sql = """
+	        SELECT id, name, author, subject, description, available_copies, location
+	        FROM books
+	        WHERE id = ? OR
+	              name LIKE ? OR
+	              author LIKE ? OR
+	              subject LIKE ? OR
+	              description LIKE ?
+	    """;
+
+	    StringBuilder result = new StringBuilder();
+	    try (Connection connection = connect();
+	         PreparedStatement statement = connection.prepareStatement(sql)) {
+	        // Bind the query parameter for all fields
+	        try {
+	            statement.setInt(1, Integer.parseInt(query)); // For book ID
+	        } catch (NumberFormatException e) {
+	            statement.setNull(1, java.sql.Types.INTEGER); // If not a valid integer
+	        }
+	        statement.setString(2, "%" + query + "%"); // For name
+	        statement.setString(3, "%" + query + "%"); // For author
+	        statement.setString(4, "%" + query + "%"); // For subject
+	        statement.setString(5, "%" + query + "%"); // For description
+
+	        try (ResultSet resultSet = statement.executeQuery()) {
+	            while (resultSet.next()) {
+	                result.append(resultSet.getInt("id")).append(",")
+	                      .append(resultSet.getString("name")).append(",")
+	                      .append(resultSet.getString("author")).append(",")
+	                      .append(resultSet.getString("subject")).append(",")
+	                      .append(resultSet.getString("description")).append(",")
+	                      .append(resultSet.getInt("available_copies")).append(",")
+	                      .append(resultSet.getString("location")).append(";");
+	            }
+	        }
+	    }
+	    return result.toString();
+	}
+
+
+	public void reserveBook(int bookId) throws SQLException {
+	    if (currentSubscriberId == -1) {
+	        throw new SQLException("No subscriber is currently logged in.");
+	    }
+
+	    if (isBookAvailable(bookId)) {
+	        throw new SQLException("This book is currently available. Reservation is not required.");
+	    }
+
+	    String closestReturnDate = getClosestReturnDate(bookId);
+	    if (closestReturnDate == null) {
+	        throw new SQLException("No valid return date found for this book. Ensure loans exist for book ID: " + bookId);
+	    }
+
+	    String sql = "INSERT INTO reserve_books (subscriber_id, book_id, closest_return_date) VALUES (?, ?, ?)";
+	    try (Connection connection = connect();
+	         PreparedStatement statement = connection.prepareStatement(sql)) {
+	        statement.setInt(1, currentSubscriberId);
+	        statement.setInt(2, bookId);
+	        statement.setString(3, closestReturnDate); // Use setString for String dates
+	        statement.executeUpdate();
+	    }
+	}
+
+
+
+
+
+	
+	public String getClosestReturnDate(int bookId) throws SQLException {
+	    String query = "SELECT MIN(return_date) FROM loans WHERE book_id = ? AND return_date > NOW()";
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        preparedStatement.setInt(1, bookId);
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            if (resultSet.next()) {
+	                return resultSet.getString(1); // Fetch the closest return date
+	            } else {
+	                throw new SQLException("No valid return date found for this book. Cannot reserve.");
+	            }
+	        }
+	    }
+	}
+
+
+
+
+
+	// Getter for currentSubscriberId
+	public int getCurrentSubscriberId() {
+		return currentSubscriberId;
+	}
+
+	// Setter for currentSubscriberId
+	public void setCurrentSubscriberId(int subscriberId) {
+		this.currentSubscriberId = subscriberId;
+	}
+	
+	public String getSubscriberProfile(int subscriberId) throws SQLException {
+	    String query = "SELECT subscriber_id, subscriber_name, last_name, subscriber_email, subscriber_phone_number, status "
+	                 + "FROM subscribe WHERE subscriber_id = ?";
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        preparedStatement.setInt(1, subscriberId);
+
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            if (resultSet.next()) {
+	                return resultSet.getInt("subscriber_id") + "," +
+	                       resultSet.getString("subscriber_name") + "," +
+	                       resultSet.getString("last_name") + "," +
+	                       resultSet.getString("subscriber_email") + "," +
+	                       resultSet.getString("subscriber_phone_number") + "," +
+	                       resultSet.getString("status");
+	            }
+	        }
+	    }
+	    return null;
+	}
+	
+	public void updateSubscriberProfile(int subscriberId, String name, String lastName, String email, String phone, String username, String password) throws SQLException {
+	    String query = """
+	        UPDATE subscribe
+	        SET subscriber_name = ?, last_name = ?, subscriber_email = ?, subscriber_phone_number = ?, user_name = ?, password = ?
+	        WHERE subscriber_id = ?
+	    """;
+
+	    try (Connection connection = connect();
+	         PreparedStatement statement = connection.prepareStatement(query)) {
+	        statement.setString(1, name);
+	        statement.setString(2, lastName);
+	        statement.setString(3, email);
+	        statement.setString(4, phone);
+	        statement.setString(5, username);
+	        statement.setString(6, password);
+	        statement.setInt(7, subscriberId);
+
+	        statement.executeUpdate();
+	    }
+	}
+	
+	public String getSubscriberData(int subscriberId) throws SQLException {
+	    String query = """
+	        SELECT subscriber_id, subscriber_name, last_name, subscriber_email, subscriber_phone_number, user_name, password
+	        FROM subscribe
+	        WHERE subscriber_id = ?
+	    """;
+
+	    try (Connection connection = connect();
+	         PreparedStatement statement = connection.prepareStatement(query)) {
+	        statement.setInt(1, subscriberId);
+
+	        try (ResultSet resultSet = statement.executeQuery()) {
+	            if (resultSet.next()) {
+	                return String.join(",",
+	                    String.valueOf(resultSet.getInt("subscriber_id")),
+	                    resultSet.getString("subscriber_name"),
+	                    resultSet.getString("last_name"),
+	                    resultSet.getString("subscriber_email"),
+	                    resultSet.getString("subscriber_phone_number"),
+	                    resultSet.getString("user_name"),
+	                    resultSet.getString("password")
+	                );
+	            }
+	        }
+	    }
+	    throw new SQLException("No subscriber found with ID: " + subscriberId);
+	}
+	
+	public void updateSubscriberData(int subscriberId, String name, String lastName, String email, String phone, String username, String password) throws SQLException {
+	    String query = """
+	        UPDATE subscribe
+	        SET subscriber_name = ?, last_name = ?, subscriber_email = ?, subscriber_phone_number = ?, user_name = ?, password = ?
+	        WHERE subscriber_id = ?
+	    """;
+
+	    try (Connection connection = connect();
+	         PreparedStatement statement = connection.prepareStatement(query)) {
+	        statement.setString(1, name);
+	        statement.setString(2, lastName);
+	        statement.setString(3, email);
+	        statement.setString(4, phone);
+	        statement.setString(5, username);
+	        statement.setString(6, password);
+	        statement.setInt(7, subscriberId);
+	        statement.executeUpdate();
+	    }
+	}
+	
+	public String getDueBooks(int subscriberId) throws SQLException {
+	    String query = """
+	        SELECT b.name, l.return_date
+	        FROM loans l
+	        INNER JOIN books b ON l.book_id = b.id
+	        WHERE l.subscriber_id = ? AND l.return_date <= DATE_ADD(NOW(), INTERVAL 1 DAY)
+	    """;
+
+	    StringBuilder dueBooks = new StringBuilder();
+
+	    try (Connection connection = connect();
+	         PreparedStatement statement = connection.prepareStatement(query)) {
+	        statement.setInt(1, subscriberId);
+	        try (ResultSet resultSet = statement.executeQuery()) {
+	            while (resultSet.next()) {
+	                String bookName = resultSet.getString("name");
+	                String returnDate = resultSet.getString("return_date");
+	                dueBooks.append(bookName).append(" (Return by: ").append(returnDate).append("); ");
+	            }
+	        }
+	    }
+
+	    return dueBooks.toString().trim();
+	}
+
+
+
+
+	
+	
+
+
 }

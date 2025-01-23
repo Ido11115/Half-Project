@@ -56,10 +56,22 @@ public class ServerCommunicator {
 
 
 	public String getSubscriberStatus(int subscriberId) throws IOException {
-	    String response = sendRequest("GET_SUBSCRIBER_STATUS," + subscriberId);
+	    String response = sendRequest("GET_SUBSCRIBER_STATUS_COUNTS," + subscriberId);
 	    System.out.println("Received Status for Subscriber ID " + subscriberId + ": " + response); // Debug log
 	    return response;
 	}
+	
+	public String getSubscriberStatusCountsByMonth() throws IOException {
+	    String command = "GET_SUBSCRIBER_STATUS_COUNTS_BY_MONTH";
+	    outputWriter.println(command);
+	    String response = inputReader.readLine(); // Read the response
+	    System.out.println("Received Status Counts by Month: " + response); // Debug
+	    return response;
+	}
+
+	
+
+
 
 
 	public void saveSubscriptionHistory(String subscriberId, List<String> actions) throws IOException {

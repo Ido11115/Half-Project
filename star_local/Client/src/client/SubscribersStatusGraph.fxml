@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+	fx:controller="client.SubscribersStatusGraphController">
+	<children>
+		<BarChart fx:id="statusBarChart" layoutX="20.0"
+			layoutY="20.0" prefWidth="600.0" prefHeight="400.0">
+			<xAxis>
+				<CategoryAxis fx:id="xAxis" label="Month" />
+			</xAxis>
+			<yAxis>
+				<NumberAxis fx:id="yAxis" label="Count" />
+			</yAxis>
+		</BarChart>
+
+	</children>
+</AnchorPane>
