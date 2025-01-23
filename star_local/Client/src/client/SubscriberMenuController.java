@@ -15,15 +15,15 @@ public class SubscriberMenuController {
 	
 	@FXML
 	private Button logoutButton;
-    private int SubscriberId; // Field to store the subscriber's ID
 
 	private ServerCommunicator serverCommunicator;
+	private int currentSubscriberId;
 
-	public void setServerCommunicator(ServerCommunicator serverCommunicator) {
-		this.serverCommunicator = serverCommunicator;
-        this.SubscriberId = SubscriberId; // Set the subscriber's ID
-
+	public void setServerCommunicator(ServerCommunicator serverCommunicator, int subscriberId) {
+	    this.serverCommunicator = serverCommunicator; // Assign the server communicator
+	    this.currentSubscriberId = subscriberId; // Assign the subscriber ID
 	}
+
 
 	@FXML
 	private void handleSearchBook() {
@@ -53,7 +53,7 @@ public class SubscriberMenuController {
 	        Parent root = loader.load();
 
 	        MyProfileController controller = loader.getController();
-	        controller.setServerCommunicator(serverCommunicator, SubscriberId); // Pass ServerCommunicator and subscriberId
+	        controller.setServerCommunicator(serverCommunicator, currentSubscriberId); // Pass the correct subscriber ID
 
 	        Stage stage = new Stage();
 	        stage.setTitle("My Profile");
@@ -64,6 +64,7 @@ public class SubscriberMenuController {
 	        showError("Error loading My Profile screen: " + e.getMessage());
 	    }
 	}
+
 
 
 
@@ -91,6 +92,9 @@ public class SubscriberMenuController {
             showError("Error during logout: " + e.getMessage());
         }
     }
+	
+
+
 
 	private void showError(String message) {
 		System.err.println(message);

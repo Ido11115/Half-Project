@@ -1,115 +1,85 @@
 package client;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-
 import java.io.IOException;
+
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
 public class MyProfileController {
 
     @FXML
-    private Label idLabel; // Non-editable ID field
+    private Label idLabel;
     @FXML
-    private TextField nameField;
+    private Label nameLabel;
     @FXML
-    private TextField lastNameField;
+    private Label lastNameLabel;
     @FXML
-    private TextField emailField;
+    private Label emailLabel;
     @FXML
-    private TextField phoneField;
+    private Label phoneLabel;
     @FXML
-    private TextField usernameField;
+    private Label usernameLabel;
     @FXML
-    private PasswordField passwordField;
+    private Label passwordLabel;
 
     private ServerCommunicator serverCommunicator;
     private int subscriberId;
 
-    // Set the ServerCommunicator and load subscriber data
     public void setServerCommunicator(ServerCommunicator serverCommunicator, int subscriberId) {
         this.serverCommunicator = serverCommunicator;
         this.subscriberId = subscriberId;
         loadProfileData();
     }
 
-    // Load subscriber data from the server
     private void loadProfileData() {
         try {
             String response = serverCommunicator.sendRequest("GET_SUBSCRIBER_DATA," + subscriberId);
             String[] details = response.split(",");
-            if (details.length >= 7) {
-                idLabel.setText(details[0]);          // Subscriber ID
-                nameField.setText(details[1]);       // Name
-                lastNameField.setText(details[2]);   // Last Name
-                emailField.setText(details[3]);      // Email
-                phoneField.setText(details[4]);      // Phone
-                usernameField.setText(details[5]);   // Username
-                passwordField.setText(details[6]);   // Password
+            if (details.length == 7) {
+                idLabel.setText(details[0]);
+                nameLabel.setText(details[1]);
+                lastNameLabel.setText(details[2]);
+                emailLabel.setText(details[3]);
+                phoneLabel.setText(details[4]);
+                usernameLabel.setText(details[5]);
+                passwordLabel.setText(details[6]);
             } else {
-                showError("Error fetching subscriber data. Please try again.");
+                System.err.println("Unexpected subscriber data format: " + response);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            showError("Error communicating with the server: " + e.getMessage());
         }
     }
-
-    // Save the updated subscriber data
+    
     @FXML
-    private void handleSaveChanges() {
-        String name = nameField.getText().trim();
-        String lastName = lastNameField.getText().trim();
-        String email = emailField.getText().trim();
-        String phone = phoneField.getText().trim();
-        String username = usernameField.getText().trim();
-        String password = passwordField.getText().trim();
-
-        if (name.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            showError("All fields must be filled.");
-            return;
-        }
-
+    private void handleEditProfile() {
         try {
-            String command = String.format(
-                "UPDATE_SUBSCRIBER_DATA,%d,%s,%s,%s,%s,%s,%s",
-                subscriberId, name, lastName, email, phone, username, password
-            );
-            String response = serverCommunicator.sendRequest(command);
-            if ("Update successful".equals(response)) {
-                showInfo("Your profile has been updated successfully.");
-            } else {
-                showError("Error updating your profile: " + response);
-            }
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("EditProfile.fxml"));
+            Parent root = loader.load();
+
+            EditProfileController controller = loader.getController();
+            controller.setServerCommunicator(serverCommunicator, subscriberId); // Pass the data
+
+            Stage stage = new Stage();
+            stage.setTitle("Edit Profile");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+            handleClose(); // Close the "My Profile" screen
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Error communicating with the server: " + e.getMessage());
         }
     }
 
-    // Close the My Profile screen
+    
+    
+
     @FXML
     private void handleClose() {
-        Stage stage = (Stage) idLabel.getScene().getWindow();
-        stage.close();
-    }
-
-    // Show error alert
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    // Show information alert
-    private void showInfo(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setContentText(message);
-        alert.showAndWait();
+        idLabel.getScene().getWindow().hide();
     }
 }

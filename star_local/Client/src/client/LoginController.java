@@ -1,5 +1,7 @@
 package client;
 
+import java.io.IOException;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +12,6 @@ import javafx.stage.Stage;
 public class LoginController {
 
     // Login fields
-    private ToggleGroup roleGroup; // Define the ToggleGroup
     @FXML
     private RadioButton subscriberRadioButton;
     @FXML
@@ -47,8 +48,7 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        // Initialize the ToggleGroup and assign it to the RadioButtons
-        roleGroup = new ToggleGroup();
+        ToggleGroup roleGroup = new ToggleGroup();
         subscriberRadioButton.setToggleGroup(roleGroup);
         librarianRadioButton.setToggleGroup(roleGroup);
 
@@ -56,46 +56,54 @@ public class LoginController {
         subscriberRadioButton.setSelected(true);
     }
 
+
+
+
     @FXML
     private void handleLogin() {
-        // Get the selected role
-        String role = subscriberRadioButton.isSelected() ? "Subscriber" : "Librarian";
         String username = usernameField.getText().trim();
         String password = passwordField.getText().trim();
+        String role;
+
+        if (subscriberRadioButton.isSelected()) {
+            role = "Subscriber";
+        } else if (librarianRadioButton.isSelected()) {
+            role = "Librarian";
+        } else {
+            showError("Please select a role.");
+            return;
+        }
 
         if (username.isEmpty() || password.isEmpty()) {
-            errorLabel.setText("Both fields are required.");
+            showError("All fields must be filled.");
             return;
         }
 
         try {
-            String command = "LOGIN," + role + "," + username + "," + password;
-            String response = serverCommunicator.sendRequest(command);
+            String response = serverCommunicator.sendRequest("LOGIN," + role + "," + username + "," + password);
 
-            if ("Login successful".equals(response)) {
-                System.out.println("Logged in successfully as " + username);
-                errorLabel.setText("");
+            if (response.startsWith("Login successful")) {
+                String[] parts = response.split(",");
+                int subscriberId = -1;
 
-                // Close the login screen
-                Stage currentStage = (Stage) usernameField.getScene().getWindow();
-                currentStage.close();
+                if (parts.length > 1) {
+                    subscriberId = Integer.parseInt(parts[1]); // Extract subscriber ID
+                }
 
-                if ("Librarian".equalsIgnoreCase(role)) {
+                if ("Subscriber".equalsIgnoreCase(role)) {
+                    loadSubscriberMenu(subscriberId);
+                } else {
                     loadLibrarianMenu();
                 }
-                // Handle subscriber login if needed
-                if ("Subscriber".equalsIgnoreCase(role)) {
-                        loadSubscriberMenu();
-                    } 
-                else {
-                        showError("Invalid subscriber credentials.");
-                    }
-                }
-        } catch (Exception e) {
-            errorLabel.setText("Error communicating with server: " + e.getMessage());
+            } else {
+                showError(response);
+            }
+        } catch (IOException e) {
             e.printStackTrace();
+            showError("Error communicating with the server: " + e.getMessage());
         }
     }
+
 
     private void loadLibrarianMenu() {
         try {
@@ -152,27 +160,31 @@ public class LoginController {
         }
     }
     
-    private void loadSubscriberMenu() {
+    private void loadSubscriberMenu(int subscriberId) {
         try {
-            System.out.println("Loading Subscriber Menu...");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscriberMenu.fxml"));
             Parent root = loader.load();
 
             SubscriberMenuController controller = loader.getController();
-            controller.setServerCommunicator(serverCommunicator);
+            controller.setServerCommunicator(serverCommunicator, subscriberId); // Pass both arguments
 
             Stage stage = new Stage();
             stage.setTitle("Subscriber Menu");
             stage.setScene(new Scene(root));
             stage.show();
 
-            // Close the login screen
-            ((Stage) loginButton.getScene().getWindow()).close();
-        } catch (Exception e) {
+            closeCurrentStage();
+        } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Error loading Subscriber Menu: " + e.getMessage());
+            showError("Error loading Subscriber Menu: " + e.getMessage());
         }
     }
+
+    private void closeCurrentStage() {
+        Stage stage = (Stage) usernameField.getScene().getWindow();
+        stage.close();
+    }
+
 
 
 
