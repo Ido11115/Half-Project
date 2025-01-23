@@ -33,33 +33,35 @@ public class DBHandler {
 	}
 
 	public String getAllSubscribersAsString() throws SQLException {
-		String query = """
-				    SELECT s.subscriber_id, s.subscriber_name, s.last_name, s.subscriber_email, s.status,
-				           GROUP_CONCAT(l.return_date SEPARATOR '\n') AS all_return_dates
-				    FROM subscribe s
-				    LEFT JOIN loans l ON s.subscriber_id = l.subscriber_id
-				    GROUP BY s.subscriber_id, s.subscriber_name, s.last_name, s.subscriber_email, s.status
-				""";
+	    String query = """
+	        SELECT s.subscriber_id, 
+	               s.subscriber_name, 
+	               COALESCE(s.last_name, '') AS last_name, 
+	               s.subscriber_email, 
+	               s.status,
+	               COALESCE(GROUP_CONCAT(l.return_date SEPARATOR '\n'), '') AS all_return_dates
+	        FROM subscribe s
+	        LEFT JOIN loans l ON s.subscriber_id = l.subscriber_id
+	        GROUP BY s.subscriber_id, s.subscriber_name, s.last_name, s.subscriber_email, s.status
+	    """;
 
-		StringBuilder result = new StringBuilder();
+	    StringBuilder result = new StringBuilder();
 
-		try (Connection connection = connect();
-				PreparedStatement preparedStatement = connection.prepareStatement(query);
-				ResultSet resultSet = preparedStatement.executeQuery()) {
-			while (resultSet.next()) {
-				result.append(resultSet.getInt("subscriber_id")).append(",")
-						.append(resultSet.getString("subscriber_name")).append(",")
-						.append(resultSet.getString("last_name") != null ? resultSet.getString("last_name") : "")
-						.append(",").append(resultSet.getString("subscriber_email")).append(",")
-						.append(resultSet.getString("status")).append(",")
-						.append(resultSet.getString("all_return_dates") != null
-								? resultSet.getString("all_return_dates")
-								: "")
-						.append(";");
-			}
-		}
-		return result.toString();
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query);
+	         ResultSet resultSet = preparedStatement.executeQuery()) {
+	        while (resultSet.next()) {
+	            result.append(resultSet.getInt("subscriber_id")).append(",")
+	                  .append(resultSet.getString("subscriber_name")).append(",")
+	                  .append(resultSet.getString("last_name")).append(",")
+	                  .append(resultSet.getString("subscriber_email")).append(",")
+	                  .append(resultSet.getString("status")).append(",")
+	                  .append(resultSet.getString("all_return_dates")).append(";");
+	        }
+	    }
+	    return result.toString();
 	}
+
 
 	public void addSubscriptionHistory(int subscriberId, String action) throws SQLException {
 		String query = "INSERT INTO detailed_subscription_history (subscriber_id, action, action_date) VALUES (?, ?, NOW())";
@@ -620,6 +622,32 @@ public class DBHandler {
 	        statement.executeUpdate();
 	    }
 	}
+	
+	public String getDueBooks(int subscriberId) throws SQLException {
+	    String query = """
+	        SELECT b.name, l.return_date
+	        FROM loans l
+	        INNER JOIN books b ON l.book_id = b.id
+	        WHERE l.subscriber_id = ? AND l.return_date <= DATE_ADD(NOW(), INTERVAL 1 DAY)
+	    """;
+
+	    StringBuilder dueBooks = new StringBuilder();
+
+	    try (Connection connection = connect();
+	         PreparedStatement statement = connection.prepareStatement(query)) {
+	        statement.setInt(1, subscriberId);
+	        try (ResultSet resultSet = statement.executeQuery()) {
+	            while (resultSet.next()) {
+	                String bookName = resultSet.getString("name");
+	                String returnDate = resultSet.getString("return_date");
+	                dueBooks.append(bookName).append(" (Return by: ").append(returnDate).append("); ");
+	            }
+	        }
+	    }
+
+	    return dueBooks.toString().trim();
+	}
+
 
 
 

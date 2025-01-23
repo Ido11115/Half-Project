@@ -162,11 +162,19 @@ public class LoginController {
     
     private void loadSubscriberMenu(int subscriberId) {
         try {
+            // Check for due books
+            String dueBooksResponse = serverCommunicator.sendRequest("GET_DUE_BOOKS," + subscriberId);
+
+            if (!"No books due soon.".equals(dueBooksResponse)) {
+                showDueBooksPopup(dueBooksResponse);
+            }
+
+            // Load the Subscriber Menu
             FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscriberMenu.fxml"));
             Parent root = loader.load();
 
             SubscriberMenuController controller = loader.getController();
-            controller.setServerCommunicator(serverCommunicator, subscriberId); // Pass both arguments
+            controller.setServerCommunicator(serverCommunicator, subscriberId);
 
             Stage stage = new Stage();
             stage.setTitle("Subscriber Menu");
@@ -178,6 +186,14 @@ public class LoginController {
             e.printStackTrace();
             showError("Error loading Subscriber Menu: " + e.getMessage());
         }
+    }
+
+    private void showDueBooksPopup(String dueBooks) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Books Due Soon");
+        alert.setHeaderText("You have books due soon:check mail");
+        alert.setContentText(dueBooks);
+        alert.showAndWait();
     }
 
     private void closeCurrentStage() {

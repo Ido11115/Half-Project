@@ -64,10 +64,11 @@ public class ClientHandler implements Runnable {
 					handleUpdateProfile(command, writer);
 				} else if (command.startsWith("GET_SUBSCRIBER_DATA")) {
 					handleGetSubcriberData(command, writer); // Handle fetching subscriber data
-	            } else if (command.startsWith("UPDATE_SUBSCRIBER_DATA")) {
-	                handleUpdateSubscriberData(command, writer); // Handle updating subscriber data
-	            }
-				else {
+				} else if (command.startsWith("UPDATE_SUBSCRIBER_DATA")) {
+					handleUpdateSubscriberData(command, writer); // Handle updating subscriber data
+				} else if (command.startsWith("GET_DUE_BOOKS")) { // Add this condition
+					handleGetDueBooks(command, writer);
+				} else {
 					writer.println("Unknown command");
 				}
 			}
@@ -83,36 +84,35 @@ public class ClientHandler implements Runnable {
 	}
 
 	private void handleLogin(String command, PrintWriter writer) {
-	    String[] parts = command.split(",");
-	    if (parts.length != 4) {
-	        writer.println("Invalid command format. Expected: LOGIN,role,username,password");
-	        return;
-	    }
+		String[] parts = command.split(",");
+		if (parts.length != 4) {
+			writer.println("Invalid command format. Expected: LOGIN,role,username,password");
+			return;
+		}
 
-	    String role = parts[1].trim();
-	    String username = parts[2].trim();
-	    String password = parts[3].trim();
+		String role = parts[1].trim();
+		String username = parts[2].trim();
+		String password = parts[3].trim();
 
-	    try {
-	        if (role.equalsIgnoreCase("Subscriber")) {
-	            int subscriberId = dbHandler.validateSubscriberLogin(username, password);
-	            if (subscriberId != -1) {
-	                writer.println("Login successful," + subscriberId); // Include subscriber ID in response
-	            } else {
-	                writer.println("Invalid username or password");
-	            }
-	        } else if (role.equalsIgnoreCase("Librarian")) {
-	            boolean isValid = dbHandler.validateLibrarianLogin(username, password);
-	            writer.println(isValid ? "Login successful" : "Invalid username or password");
-	        } else {
-	            writer.println("Invalid role specified");
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        writer.println("Error processing login: " + e.getMessage());
-	    }
+		try {
+			if (role.equalsIgnoreCase("Subscriber")) {
+				int subscriberId = dbHandler.validateSubscriberLogin(username, password);
+				if (subscriberId != -1) {
+					writer.println("Login successful," + subscriberId); // Include subscriber ID in response
+				} else {
+					writer.println("Invalid username or password");
+				}
+			} else if (role.equalsIgnoreCase("Librarian")) {
+				boolean isValid = dbHandler.validateLibrarianLogin(username, password);
+				writer.println(isValid ? "Login successful" : "Invalid username or password");
+			} else {
+				writer.println("Invalid role specified");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error processing login: " + e.getMessage());
+		}
 	}
-
 
 	private void handleRegisterSubscriber(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
@@ -386,49 +386,66 @@ public class ClientHandler implements Runnable {
 			writer.println("Error updating profile: " + e.getMessage());
 		}
 	}
-	
+
 	private void handleGetSubcriberData(String command, PrintWriter writer) {
-	    String[] parts = command.split(",");
-	    if (parts.length != 2) {
-	        writer.println("Invalid command format. Expected: GET_SUBSCRIBER_DATA,subscriberId");
-	        return;
-	    }
+		String[] parts = command.split(",");
+		if (parts.length != 2) {
+			writer.println("Invalid command format. Expected: GET_SUBSCRIBER_DATA,subscriberId");
+			return;
+		}
 
-	    int subscriberId = Integer.parseInt(parts[1]);
+		int subscriberId = Integer.parseInt(parts[1]);
 
-	    try {
-	        String subscriberData = dbHandler.getSubscriberData(subscriberId);
-	        writer.println(subscriberData);
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        writer.println("Error fetching subscriber data: " + e.getMessage());
-	    }
+		try {
+			String subscriberData = dbHandler.getSubscriberData(subscriberId);
+			writer.println(subscriberData);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error fetching subscriber data: " + e.getMessage());
+		}
 	}
-	
+
 	private void handleUpdateSubscriberData(String command, PrintWriter writer) {
-	    String[] parts = command.split(",", 8);
-	    if (parts.length != 8) {
-	        writer.println("Invalid command format. Expected: UPDATE_SUBSCRIBER_DATA,id,name,lastName,email,phone,username,password");
-	        return;
-	    }
+		String[] parts = command.split(",", 8);
+		if (parts.length != 8) {
+			writer.println(
+					"Invalid command format. Expected: UPDATE_SUBSCRIBER_DATA,id,name,lastName,email,phone,username,password");
+			return;
+		}
 
-	    int subscriberId = Integer.parseInt(parts[1]);
-	    String name = parts[2];
-	    String lastName = parts[3];
-	    String email = parts[4];
-	    String phone = parts[5];
-	    String username = parts[6];
-	    String password = parts[7];
+		int subscriberId = Integer.parseInt(parts[1]);
+		String name = parts[2];
+		String lastName = parts[3];
+		String email = parts[4];
+		String phone = parts[5];
+		String username = parts[6];
+		String password = parts[7];
 
-	    try {
-	        dbHandler.updateSubscriberData(subscriberId, name, lastName, email, phone, username, password);
-	        writer.println("Update successful");
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        writer.println("Error updating subscriber data: " + e.getMessage());
-	    }
+		try {
+			dbHandler.updateSubscriberData(subscriberId, name, lastName, email, phone, username, password);
+			writer.println("Update successful");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error updating subscriber data: " + e.getMessage());
+		}
 	}
 
+	private void handleGetDueBooks(String command, PrintWriter writer) {
+		String[] parts = command.split(",");
+		if (parts.length != 2) {
+			writer.println("Invalid command format. Expected: GET_DUE_BOOKS,subscriberId");
+			return;
+		}
 
+		int subscriberId = Integer.parseInt(parts[1]);
+
+		try {
+			String dueBooks = dbHandler.getDueBooks(subscriberId);
+			writer.println(dueBooks.isEmpty() ? "No books due soon." : dueBooks);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error fetching due books: " + e.getMessage());
+		}
+	}
 
 }
