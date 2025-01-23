@@ -210,6 +210,25 @@ public class LibrarianMenuController {
 			showError("Error loading Loans-Time Graph screen.");
 		}
 	}
+	
+	@FXML
+	private void handleLoans() {
+	    try {
+	        FXMLLoader loader = new FXMLLoader(getClass().getResource("Loans.fxml"));
+	        Parent root = loader.load();
+
+	        LoansController controller = loader.getController();
+	        controller.setServerCommunicator(serverCommunicator); // Pass the ServerCommunicator
+
+	        Stage stage = new Stage();
+	        stage.setTitle("Loans");
+	        stage.setScene(new Scene(root));
+	        stage.show();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        showError("Error loading Loans screen: " + e.getMessage());
+	    }
+	}
 
 	private void showError(String message) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
