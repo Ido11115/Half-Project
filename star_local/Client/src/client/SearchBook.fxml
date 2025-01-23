@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="client.SearchBookController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <Label text="Search Book" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="searchField" promptText="Enter book name,author name , book ID, subject or desctiption" />
+    <Button text="Search" onAction="#handleSearch" />
+
+    <TableView fx:id="bookTable" prefWidth="600">
+        <columns>
+            <TableColumn fx:id="nameColumn" text="Book Name" prefWidth="200" />
+            <TableColumn fx:id="authorColumn" text="Author" prefWidth="200" />
+            <TableColumn fx:id="availableCopiesColumn" text="Available Copies" prefWidth="100" />
+            <TableColumn fx:id="locationColumn" text="Location" prefWidth="100" />
+        </columns>
+    </TableView>
+
+    <Button text="Reserve Selected Book" onAction="#handleReserve" />
+    <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+</VBox>

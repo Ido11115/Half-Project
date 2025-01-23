@@ -3,19 +3,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="client.LoginController" >
-    <!-- Login Tab -->
-        <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
-            <Label text="Login as:" />
-            <HBox spacing="10">
-                <RadioButton fx:id="subscriberRadioButton" text="Subscriber" />
-                <RadioButton fx:id="librarianRadioButton" text="Librarian" />
-            </HBox>
-            <TextField fx:id="usernameField" promptText="Username" />
-            <PasswordField fx:id="passwordField" promptText="Password" />
-            <Label fx:id="errorLabel" text="" style="-fx-text-fill: red;" />
-            <Button text="Login" onAction="#handleLogin" />
-        </VBox>
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+	fx:controller="client.LoginController">
+	<!-- Login Tab -->
+	<VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+		<Label text="Login as:" />
+		<HBox spacing="10">
+			<RadioButton fx:id="subscriberRadioButton"
+				text="Subscriber" />
+			<RadioButton fx:id="librarianRadioButton"
+				text="Librarian" />
+		</HBox>
+		<TextField fx:id="usernameField" promptText="Username" />
+		<PasswordField fx:id="passwordField"
+			promptText="Password" />
+		<Label fx:id="errorLabel" text="" style="-fx-text-fill: red;" />
+		<Button fx:id="loginButton" text="Login"
+			onAction="#handleLogin" />
+	</VBox>
 
-    
+
 </AnchorPane>

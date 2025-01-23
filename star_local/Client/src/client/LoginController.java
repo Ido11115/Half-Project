@@ -35,6 +35,9 @@ public class LoginController {
     private PasswordField registerPasswordField;
     @FXML
     private Label registerErrorLabel;
+    
+	@FXML
+	private Button loginButton;
 
     private ServerCommunicator serverCommunicator;
 
@@ -81,9 +84,13 @@ public class LoginController {
                     loadLibrarianMenu();
                 }
                 // Handle subscriber login if needed
-            } else {
-                errorLabel.setText(response);
-            }
+                if ("Subscriber".equalsIgnoreCase(role)) {
+                        loadSubscriberMenu();
+                    } 
+                else {
+                        showError("Invalid subscriber credentials.");
+                    }
+                }
         } catch (Exception e) {
             errorLabel.setText("Error communicating with server: " + e.getMessage());
             e.printStackTrace();
@@ -144,6 +151,30 @@ public class LoginController {
             e.printStackTrace();
         }
     }
+    
+    private void loadSubscriberMenu() {
+        try {
+            System.out.println("Loading Subscriber Menu...");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscriberMenu.fxml"));
+            Parent root = loader.load();
+
+            SubscriberMenuController controller = loader.getController();
+            controller.setServerCommunicator(serverCommunicator);
+
+            Stage stage = new Stage();
+            stage.setTitle("Subscriber Menu");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+            // Close the login screen
+            ((Stage) loginButton.getScene().getWindow()).close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error loading Subscriber Menu: " + e.getMessage());
+        }
+    }
+
+
 
     @FXML
     private void handleLogout() {
