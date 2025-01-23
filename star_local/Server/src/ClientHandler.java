@@ -68,6 +68,8 @@ public class ClientHandler implements Runnable {
 					handleUpdateSubscriberData(command, writer); // Handle updating subscriber data
 				} else if (command.startsWith("GET_DUE_BOOKS")) { // Add this condition
 					handleGetDueBooks(command, writer);
+				} else if (command.startsWith("GET_LOANS")) {
+					handleGetLoans(writer);
 				} else {
 					writer.println("Unknown command");
 				}
@@ -84,35 +86,41 @@ public class ClientHandler implements Runnable {
 	}
 
 	private void handleLogin(String command, PrintWriter writer) {
-		String[] parts = command.split(",");
-		if (parts.length != 4) {
-			writer.println("Invalid command format. Expected: LOGIN,role,username,password");
-			return;
-		}
+	    String[] parts = command.split(",");
+	    if (parts.length != 4) {
+	        writer.println("Invalid command format. Expected: LOGIN,role,username,password");
+	        return;
+	    }
 
-		String role = parts[1].trim();
-		String username = parts[2].trim();
-		String password = parts[3].trim();
+	    String role = parts[1].trim();
+	    String username = parts[2].trim();
+	    String password = parts[3].trim();
 
-		try {
-			if (role.equalsIgnoreCase("Subscriber")) {
-				int subscriberId = dbHandler.validateSubscriberLogin(username, password);
-				if (subscriberId != -1) {
-					writer.println("Login successful," + subscriberId); // Include subscriber ID in response
-				} else {
-					writer.println("Invalid username or password");
-				}
-			} else if (role.equalsIgnoreCase("Librarian")) {
-				boolean isValid = dbHandler.validateLibrarianLogin(username, password);
-				writer.println(isValid ? "Login successful" : "Invalid username or password");
-			} else {
-				writer.println("Invalid role specified");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			writer.println("Error processing login: " + e.getMessage());
-		}
+	    try {
+	    	if (role.equalsIgnoreCase("Subscriber")) {
+	    	    int subscriberId = dbHandler.validateSubscriberLogin(username, password);
+	    	    if (subscriberId != -1) {
+	    	        dbHandler.setCurrentSubscriberId(subscriberId); // Set the current subscriber ID here
+	    	        writer.println("Login successful," + subscriberId); // Include subscriber ID in response
+	    	    } else {
+	    	        writer.println("Invalid username or password");
+	    	    }
+	    	    
+	    	   
+	        } 
+	    	else if (role.equalsIgnoreCase("Librarian")) {
+	    		   boolean isValid = dbHandler.validateLibrarianLogin(username, password);
+	    		   writer.println(isValid ? "Login successful" : "Invalid username or password");
+	    	}
+	    	else {
+	            writer.println("Invalid role specified");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        writer.println("Error processing login: " + e.getMessage());
+	    }
 	}
+
 
 	private void handleRegisterSubscriber(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
@@ -353,7 +361,7 @@ public class ClientHandler implements Runnable {
 				writer.println("No subscriber is logged in.");
 				return;
 			}
-
+			System.out.println(subscriberId);
 			String profileData = dbHandler.getSubscriberProfile(subscriberId);
 			writer.println(profileData != null ? profileData : "Error fetching profile data.");
 		} catch (SQLException e) {
@@ -445,6 +453,20 @@ public class ClientHandler implements Runnable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			writer.println("Error fetching due books: " + e.getMessage());
+		}
+	}
+
+	private void handleGetLoans(PrintWriter writer) {
+		try {
+			List<String> loans = dbHandler.getAllLoansAsString(); // Returns loans as a formatted string
+			if (loans.isEmpty()) {
+				writer.println("No loans found.");
+			} else {
+				writer.println(String.join(";", loans)); // Send formatted string to the client
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error fetching loans: " + e.getMessage());
 		}
 	}
 

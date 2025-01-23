@@ -37,9 +37,11 @@
 		layoutY="300" text="Generate Loans-Time Graph"
 		onAction="#handleGenerateLoansTimeGraph" />
 
+	<Button fx:id="loansButton" text="Loans" onAction="#handleLoans" />
 
 	<!-- Logout -->
-<Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" />
+	<Button fx:id="logoutButton" text="Logout"
+		onAction="#handleLogout" />
 
 
 
