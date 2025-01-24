@@ -2,6 +2,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles database operations including connecting to the database,
+ * managing subscribers, loans, and subscription history, as well as
+ * performing various queries and updates on the database.
+ */
 public class DBHandler {
 	private static final String DB_URL = "jdbc:mysql://localhost:3306/world?useSSL=false&serverTimezone=UTC";
 	private static final String USER = "root";
@@ -21,6 +26,12 @@ public class DBHandler {
 		}
 	}
 
+	/**
+     * Establishes a connection to the database.
+     *
+     * @return a Connection object if successful
+     * @throws SQLException if a database access error occurs
+     */
 	public Connection connect() throws SQLException {
 		try {
 			Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
@@ -31,7 +42,13 @@ public class DBHandler {
 			throw e;
 		}
 	}
-
+	
+	/**
+     * Retrieves all subscribers as a formatted string.
+     *
+     * @return a string containing all subscriber details
+     * @throws SQLException if a database access error occurs
+     */
 	public String getAllSubscribersAsString() throws SQLException {
 		String query = """
 					            SELECT subscriber_id, subscriber_name, last_name, subscriber_email, status
@@ -53,7 +70,14 @@ public class DBHandler {
 		}
 		return result.toString();
 	}
-
+	
+	/**
+     * Adds a record to the subscription history for a specific subscriber.
+     *
+     * @param subscriberId the ID of the subscriber
+     * @param action the action performed
+     * @throws SQLException if a database access error occurs
+     */
 	public void addSubscriptionHistory(int subscriberId, String action) throws SQLException {
 		String query = "INSERT INTO detailed_subscription_history (subscriber_id, action, action_date) VALUES (?, ?, NOW())";
 
@@ -66,6 +90,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+     * Retrieves the subscription history for a specific subscriber.
+     *
+     * @param subscriberId the ID of the subscriber
+     * @return a string containing the subscription history
+     * @throws SQLException if a database access error occurs
+     */
 	public String getSubscriptionHistory(int subscriberId) throws SQLException {
 		String query = """
 				    SELECT action, action_date FROM detailed_subscription_history
@@ -86,6 +117,13 @@ public class DBHandler {
 		return history.toString().trim();
 	}
 
+	/**
+     * Gets the status of a specific subscriber.
+     *
+     * @param subscriberId the ID of the subscriber
+     * @return the subscriber's status
+     * @throws SQLException if a database access error occurs
+     */
 	public String getSubscriberStatus(int subscriberId) throws SQLException {
 		String query = "SELECT status FROM subscribe WHERE subscriber_id = ?";
 		try (Connection connection = connect();
@@ -100,6 +138,14 @@ public class DBHandler {
 		return "Unknown";
 	}
 
+	/**
+	 * Saves the subscription history for a subscriber by removing existing records
+	 * and inserting new actions with their respective timestamps.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @param actions       A list of actions performed by the subscriber.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public void saveSubscriptionHistory(int subscriberId, List<String> actions) throws SQLException {
 		String deleteQuery = "DELETE FROM detailed_subscription_history WHERE subscriber_id = ?";
 		String insertQuery = "INSERT INTO detailed_subscription_history (subscriber_id, action, action_date) VALUES (?, ?, NOW())";
@@ -121,6 +167,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Updates the status of a subscriber in the subscription database.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @param newStatus    The new status to be assigned to the subscriber.
+	 * @throws SQLException If an SQL error occurs during the update.
+	 */
 	public void updateSubscriberStatus(int subscriberId, String newStatus) throws SQLException {
 		String query = "UPDATE subscribe SET status = ? WHERE subscriber_id = ?";
 
@@ -132,6 +185,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Updates the status of a subscriber in the subscription database.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @param newStatus    The new status to be assigned to the subscriber.
+	 * @throws SQLException If an SQL error occurs during the update.
+	 */
 	public void updateSubscriber(int id, String phone, String email) throws SQLException {
 		String query = "UPDATE subscribe SET subscriber_phone_number = ?, subscriber_email = ? WHERE subscriber_id = ?";
 		try (Connection connection = connect();
@@ -143,6 +203,14 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Verifies the login credentials of a subscriber and retrieves their unique ID.
+	 *
+	 * @param name     The username of the subscriber.
+	 * @param password The password of the subscriber.
+	 * @return The unique ID of the subscriber if login is successful, or -1 if it fails.
+	 * @throws SQLException If an SQL error occurs during verification.
+	 */
 	public int verifySubscriberLogin(String name, String password) throws SQLException {
 	    String query = "SELECT subscriber_id FROM subscribe WHERE user_name = ? AND password = ?";
 	    try (Connection connection = connect();
@@ -160,6 +228,14 @@ public class DBHandler {
 
 
 
+	/**
+	 * Verifies the login credentials of a librarian.
+	 *
+	 * @param username The username of the librarian.
+	 * @param password The password of the librarian.
+	 * @return True if the credentials are valid, false otherwise.
+	 * @throws SQLException If an SQL error occurs during verification.
+	 */
 	public boolean verifyLibrarianLogin(String username, String password) throws SQLException {
 		String query = "SELECT * FROM Librarian WHERE Username = ? AND Password = ?";
 		try (Connection connection = connect();
@@ -172,6 +248,14 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Validates the login credentials of a subscriber and retrieves their unique ID.
+	 *
+	 * @param username The username of the subscriber.
+	 * @param password The password of the subscriber.
+	 * @return The unique ID of the subscriber if login is successful, or -1 if it fails.
+	 * @throws SQLException If an SQL error occurs during validation.
+	 */
 	public int validateSubscriberLogin(String username, String password) throws SQLException {
 		String query = "SELECT subscriber_id FROM subscribe WHERE LOWER(user_name) = LOWER(?) AND password = ?";
 		try (Connection connection = connect();
@@ -188,6 +272,14 @@ public class DBHandler {
 		return -1; // Return -1 if login fails
 	}
 
+	/**
+	 * Validates the login credentials of a librarian.
+	 *
+	 * @param username The username of the librarian.
+	 * @param password The password of the librarian.
+	 * @return True if the credentials are valid, false otherwise.
+	 * @throws SQLException If an SQL error occurs during validation.
+	 */
 	public boolean validateLibrarianLogin(String username, String password) throws SQLException {
 		String query = "SELECT * FROM Librarian WHERE Username = ? AND Password = ?";
 		try (Connection connection = connect();
@@ -200,6 +292,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Loans a book to a subscriber by inserting a record into the loans table.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @param bookId       The unique ID of the book to be loaned.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public void loanBookToSubscriber(int subscriberId, int bookId) throws SQLException {
 		String query = "INSERT INTO loans (subscriber_id, book_id, loan_date) VALUES (?, ?, NOW())";
 		try (Connection connection = connect();
@@ -211,6 +310,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Checks if a book is available for loan by querying the available copies in the database.
+	 *
+	 * @param bookId The unique ID of the book.
+	 * @return True if the book is available, false otherwise.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public boolean isBookAvailable(int bookId) throws SQLException {
 		String query = "SELECT available_copies FROM books WHERE id = ?";
 		try (Connection connection = connect();
@@ -226,6 +332,14 @@ public class DBHandler {
 		return false; // Default to unavailable
 	}
 
+	/**
+	 * Processes the return of a book from a subscriber by removing the loan record,
+	 * incrementing the available copies of the book, and updating the subscription history.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @param bookId       The unique ID of the book being returned.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public void returnBookFromSubscriber(int subscriberId, int bookId) throws SQLException {
 		String deleteLoanQuery = "DELETE FROM loans WHERE subscriber_id = ? AND book_id = ?";
 		String incrementCopiesQuery = "UPDATE books SET available_copies = available_copies + 1 WHERE id = ?";
@@ -251,6 +365,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Retrieves detailed information about a subscriber based on their unique ID.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @return A formatted string containing subscriber details, or a message if not found.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public String getSubscriberInfo(int subscriberId) throws SQLException {
 		String query = "SELECT * FROM subscribers WHERE subscriber_id = ?";
 		try (Connection connection = connect();
@@ -270,6 +391,19 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Adds a new subscriber to the system with the provided details.
+	 *
+	 * @param id       The unique ID of the subscriber.
+	 * @param name     The first name of the subscriber.
+	 * @param lastName The last name of the subscriber.
+	 * @param userName The username of the subscriber.
+	 * @param phone    The phone number of the subscriber.
+	 * @param email    The email address of the subscriber.
+	 * @param password The password for the subscriber's account.
+	 * @param status   The status of the subscriber (e.g., active, inactive).
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public void addSubscriber(int id, String name, String lastName, String userName, String phone, String email,
 			String password, String status) throws SQLException {
 		String query = "INSERT INTO subscribe (subscriber_id, subscriber_name,last_name, user_name, "
@@ -289,6 +423,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Checks if a subscriber is active by querying their status in the database.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @return True if the subscriber is active, false otherwise.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public boolean isSubscriberActive(int subscriberId) throws SQLException {
 		String query = "SELECT status FROM subscribe WHERE subscriber_id = ?";
 		try (Connection connection = connect();
@@ -304,6 +445,14 @@ public class DBHandler {
 		return false; // Default to inactive if not found
 	}
 
+	/**
+	 * Checks if a loan record exists for a specific subscriber and book combination.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @param bookId       The unique ID of the book.
+	 * @return True if a loan record exists, false otherwise.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public boolean isLoanExists(int subscriberId, int bookId) throws SQLException {
 		String query = "SELECT COUNT(*) FROM loans WHERE subscriber_id = ? AND book_id = ?";
 		try (Connection connection = connect();
@@ -320,6 +469,15 @@ public class DBHandler {
 		return false;
 	}
 
+	/**
+	 * Loans a book to a subscriber, creating a loan record and decrementing the book's available copies.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @param bookId       The unique ID of the book being loaned.
+	 * @param loanDate     The date the loan starts.
+	 * @param returnDate   The expected return date of the loan.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public void loanBookToSubscriber(int subscriberId, int bookId, String loanDate, String returnDate)
 			throws SQLException {
 		String insertLoanQuery = "INSERT INTO loans (subscriber_id, book_id, loan_date, return_date) VALUES (?, ?, ?, ?)";
@@ -350,6 +508,12 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Retrieves a list of subscriber IDs who have overdue loans and are still active.
+	 *
+	 * @return A list of delinquent subscriber IDs.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public List<Integer> getDelinquentSubscribers() throws SQLException {
 		String query = """
 				    SELECT DISTINCT l.subscriber_id
@@ -371,6 +535,12 @@ public class DBHandler {
 		return delinquentSubscribers;
 	}
 
+	/**
+	 * Updates the status of a subscriber to inactive in the database.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public void updateSubscriberStatusToInactive(int subscriberId) throws SQLException {
 		String query = "UPDATE subscribe SET status = 'inactive' WHERE subscriber_id = ?";
 
@@ -381,6 +551,12 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Retrieves the counts of subscribers by their status for the current month, grouped by status and month.
+	 *
+	 * @return A formatted string containing the status, month, and count for each group.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public String getSubscriberStatusCountsByMonth() throws SQLException {
 		String query = """
 				    SELECT status, DATE_FORMAT(CURDATE(), '%Y-%m') AS month, COUNT(*) AS count
@@ -402,6 +578,12 @@ public class DBHandler {
 		return result.toString().trim();
 	}
 
+	/**
+	 * Retrieves the loan duration for all active loans, including subscriber names, book names, and loan days.
+	 *
+	 * @return A formatted string containing subscriber name, book name, and loan days.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public String getLoansTime() throws SQLException {
 		String query = """
 				    SELECT s.subscriber_name, b.name AS book_name,
@@ -425,6 +607,13 @@ public class DBHandler {
 		return result.toString().trim(); // Example: "John,The Great Gatsby,15;Jane,1984,30"
 	}
 
+	/**
+	 * Searches for books in the database based on various criteria such as ID, name, author, subject, or description.
+	 *
+	 * @param query The search keyword or book ID.
+	 * @return A formatted string containing matching books' details.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public String searchBooks(String query) throws SQLException {
 		String sql = """
 				    SELECT id, name, author, subject, description, available_copies, location
@@ -462,6 +651,12 @@ public class DBHandler {
 		return result.toString();
 	}
 
+	/**
+	 * Reserves a book for the currently logged-in subscriber if it is not available for loan.
+	 *
+	 * @param bookId The unique ID of the book to be reserved.
+	 * @throws SQLException If no subscriber is logged in, the book is available, or no valid return date is found.
+	 */
 	public void reserveBook(int bookId) throws SQLException {
 		if (currentSubscriberId == -1) {
 			throw new SQLException("No subscriber is currently logged in.");
@@ -486,6 +681,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Retrieves the closest return date for a specific book based on current loans.
+	 *
+	 * @param bookId The unique ID of the book.
+	 * @return The closest return date as a string.
+	 * @throws SQLException If no valid return date is found for the book.
+	 */
 	public String getClosestReturnDate(int bookId) throws SQLException {
 		String query = "SELECT MIN(return_date) FROM loans WHERE book_id = ? AND return_date > NOW()";
 		try (Connection connection = connect();
@@ -501,16 +703,33 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Retrieves the ID of the currently logged-in subscriber.
+	 *
+	 * @return The ID of the currently logged-in subscriber.
+	 */
 	// Getter for currentSubscriberId
 	public int getCurrentSubscriberId() {
 		return this.currentSubscriberId;
 	}
 
+	/**
+	 * Sets the ID of the currently logged-in subscriber.
+	 *
+	 * @param subscriberId The ID of the subscriber to set as currently logged in.
+	 */
 	// Setter for currentSubscriberId
 	public void setCurrentSubscriberId(int subscriberId) {
 		this.currentSubscriberId = subscriberId;
 	}
 
+	/**
+	 * Retrieves the profile information of a specific subscriber.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @return A formatted string containing subscriber profile details.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public String getSubscriberProfile(int subscriberId) throws SQLException {
 		String query = "SELECT subscriber_id, subscriber_name, last_name, subscriber_email, subscriber_phone_number, status "
 				+ "FROM subscribe WHERE subscriber_id = ?";
@@ -529,6 +748,18 @@ public class DBHandler {
 		return null;
 	}
 
+	/**
+	 * Updates the profile information of a specific subscriber.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @param name         The updated first name of the subscriber.
+	 * @param lastName     The updated last name of the subscriber.
+	 * @param email        The updated email address of the subscriber.
+	 * @param phone        The updated phone number of the subscriber.
+	 * @param username     The updated username of the subscriber.
+	 * @param password     The updated password of the subscriber.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public void updateSubscriberProfile(int subscriberId, String name, String lastName, String email, String phone,
 			String username, String password) throws SQLException {
 		String query = """
@@ -550,6 +781,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Retrieves detailed data for a specific subscriber.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @return A formatted string containing subscriber details.
+	 * @throws SQLException If no subscriber is found with the given ID.
+	 */
 	public String getSubscriberData(int subscriberId) throws SQLException {
 		String query = """
 				    SELECT subscriber_id, subscriber_name, last_name, subscriber_email, subscriber_phone_number, user_name, password
@@ -572,6 +810,18 @@ public class DBHandler {
 		throw new SQLException("No subscriber found with ID: " + subscriberId);
 	}
 
+	/**
+	 * Updates the detailed data for a specific subscriber.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @param name         The updated first name of the subscriber.
+	 * @param lastName     The updated last name of the subscriber.
+	 * @param email        The updated email address of the subscriber.
+	 * @param phone        The updated phone number of the subscriber.
+	 * @param username     The updated username of the subscriber.
+	 * @param password     The updated password of the subscriber.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public void updateSubscriberData(int subscriberId, String name, String lastName, String email, String phone,
 			String username, String password) throws SQLException {
 		String query = """
@@ -592,6 +842,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Retrieves a list of books that are due for return by a specific subscriber.
+	 *
+	 * @param subscriberId The unique ID of the subscriber.
+	 * @return A formatted string containing book names and their due dates.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public String getDueBooks(int subscriberId) throws SQLException {
 		String query = """
 				    SELECT b.name, l.return_date
@@ -615,6 +872,13 @@ public class DBHandler {
 
 		return dueBooks.toString().trim();
 	}
+	
+	/**
+	 * Retrieves a list of all loans in the system as formatted strings.
+	 *
+	 * @return A list of strings, each containing details of a loan.
+	 * @throws SQLException If an SQL error occurs during the operation.
+	 */
 	public List<String> getAllLoansAsString() throws SQLException {
 	    String query = """
 	            SELECT l.loan_id, l.subscriber_id, l.book_id, l.loan_date, l.return_date, 

@@ -6,6 +6,11 @@ import javafx.scene.chart.XYChart;
 
 import java.io.IOException;
 
+/**
+ * The LoansTimeGraphController class is responsible for displaying a bar chart
+ * that visualizes loan durations for various books and subscribers.
+ * It fetches loan data from the server and populates the graph with the parsed data.
+ */
 public class LoansTimeGraphController {
 
     @FXML
@@ -13,11 +18,20 @@ public class LoansTimeGraphController {
 
     private ServerCommunicator serverCommunicator;
 
+    /**
+     * Sets the ServerCommunicator for this controller and loads loan data to populate the graph.
+     *
+     * @param serverCommunicator the ServerCommunicator used for server communication
+     */
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
         loadLoanData();
     }
 
+    /**
+     * Loads loan data from the server, parses it, and populates the bar chart.
+     * Each bar represents the loan duration for a specific book borrowed by a subscriber.
+     */
     private void loadLoanData() {
         try {
             // Fetch loan data from the server
@@ -51,6 +65,11 @@ public class LoansTimeGraphController {
         }
     }
 
+    /**
+     * Displays an error message in the console or through other error handling mechanisms.
+     *
+     * @param message the error message to display
+     */
     private void showError(String message) {
         // Handle error display (e.g., alert dialog or console log)
         System.err.println(message);

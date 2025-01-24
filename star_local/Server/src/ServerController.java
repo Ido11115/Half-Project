@@ -6,6 +6,10 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * The ServerController class manages the server's UI and server functionality.
+ * It allows the user to start a server, manage client connections, and fetch server-related data.
+ */
 public class ServerController {
 
     @FXML
@@ -28,6 +32,10 @@ public class ServerController {
 
     private Thread serverThread;
 
+    /**
+     * Starts the server using the IP and port specified in the input fields.
+     * Updates the status label to indicate success or errors.
+     */
     @FXML
     private void startServer() {
         String ip = ipField.getText().trim();
@@ -51,6 +59,13 @@ public class ServerController {
         statusLabel.setText("Server started on " + ip + ":" + port);
     }
 
+    /**
+     * Runs the server on the specified IP and port. Listens for client connections
+     * and handles each client in a separate thread.
+     *
+     * @param ip   the IP address on which the server should run
+     * @param port the port on which the server should run
+     */
     private void runServer(String ip, int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server is running on " + ip + ":" + port);
@@ -68,5 +83,4 @@ public class ServerController {
         }
     }
 
-   
 }

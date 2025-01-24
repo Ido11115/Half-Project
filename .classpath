@@ -54,5 +54,13 @@
 	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Project/prototype/Final_stage/jackson-core-2.2.3.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Project/prototype/Final_stage/jackson-databind-2.2.3.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Project/prototype/Final_stage/jackson-annotations-2.2.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/מתן/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib/javafx.base.jar"/>
+	<classpathentry kind="lib" path="C:/Users/מתן/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib/javafx.controls.jar"/>
+	<classpathentry kind="lib" path="C:/Users/מתן/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib/javafx.fxml.jar"/>
+	<classpathentry kind="lib" path="C:/Users/מתן/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib/javafx.graphics.jar"/>
+	<classpathentry kind="lib" path="C:/Users/מתן/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib/javafx.media.jar"/>
+	<classpathentry kind="lib" path="C:/Users/מתן/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib/javafx.swing.jar"/>
+	<classpathentry kind="lib" path="C:/Users/מתן/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib/javafx.web.jar"/>
+	<classpathentry kind="lib" path="C:/Users/מתן/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib/javafx-swt.jar"/>
 	<classpathentry kind="output" path="star_local/Client/bin"/>
 </classpath>

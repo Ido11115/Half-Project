@@ -7,26 +7,48 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * The ConnectController class manages the connection setup between the client and the server.
+ * It handles user input for the server's IP address and port, establishes the connection,
+ * and transitions to other application screens based on the connection status.
+ */
 public class ConnectController {
 
     @FXML
     private TextField ipField;
+
     @FXML
     private TextField portField;
+
     @FXML
     private Label connectErrorLabel;
 
     private Stage currentStage;
     private ServerCommunicator serverCommunicator;
 
+    /**
+     * Sets the stage for the controller.
+     *
+     * @param stage the current stage of the application
+     */
     public void setStage(Stage stage) {
         this.currentStage = stage;
     }
 
+    /**
+     * Gets the ServerCommunicator instance.
+     *
+     * @return the ServerCommunicator used for communicating with the server
+     */
     public ServerCommunicator getServerCommunicator() {
         return serverCommunicator;
     }
 
+    /**
+     * Handles the server connection process.
+     * Validates the IP address and port, establishes a connection to the server,
+     * and transitions to the login screen if successful.
+     */
     @FXML
     private void handleServerConnect() {
         String ip = ipField.getText().trim();
@@ -54,11 +76,17 @@ public class ConnectController {
         }
     }
 
+    /**
+     * Handles the cancel button action by closing the current stage.
+     */
     @FXML
     private void handleCancel() {
         currentStage.close(); // Close the popup if canceled
     }
 
+    /**
+     * Displays the login screen after a successful connection to the server.
+     */
     private void showLoginScreen() {
         try {
             Stage loginStage = new Stage();
@@ -78,6 +106,9 @@ public class ConnectController {
         }
     }
 
+    /**
+     * Displays the main screen of the application after closing the login screen.
+     */
     private void showMainScreen() {
         try {
             Stage mainStage = new Stage();

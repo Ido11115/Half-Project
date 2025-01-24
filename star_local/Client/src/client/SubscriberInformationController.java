@@ -1,4 +1,7 @@
-// Updated SubscriberInformationController
+/**
+ * Controller class for managing subscriber information in a GUI.
+ * Handles loading, searching, and displaying subscriber data.
+ */
 package client;
 
 import javafx.beans.property.SimpleObjectProperty;
@@ -13,27 +16,63 @@ import java.util.List;
 
 public class SubscriberInformationController {
 
+    /**
+     * TextField for searching subscribers by ID.
+     */
     @FXML
     private TextField searchField;
+
+    /**
+     * TableView for displaying subscriber data.
+     */
     @FXML
     private TableView<Subscriber> subscriberTable;
+
+    /**
+     * TableColumn for displaying subscriber IDs.
+     */
     @FXML
     private TableColumn<Subscriber, Integer> idColumn;
+
+    /**
+     * TableColumn for displaying subscriber first names.
+     */
     @FXML
     private TableColumn<Subscriber, String> nameColumn;
+
+    /**
+     * TableColumn for displaying subscriber last names.
+     */
     @FXML
     private TableColumn<Subscriber, String> lastNameColumn;
+
+    /**
+     * TableColumn for displaying subscriber email addresses.
+     */
     @FXML
     private TableColumn<Subscriber, String> emailColumn;
+
+    /**
+     * TableColumn for displaying subscriber statuses.
+     */
     @FXML
     private TableColumn<Subscriber, String> statusColumn;
-   // @FXML
-    //private TableColumn<Subscriber, String> allReturnDatesColumn;
 
+    /**
+     * List of subscribers to be displayed in the table.
+     */
     private ObservableList<Subscriber> subscriberList = FXCollections.observableArrayList();
+
+    /**
+     * Communicator for interacting with the server.
+     */
     private ServerCommunicator serverCommunicator;
 
-    // Setter for ServerCommunicator
+    /**
+     * Sets the ServerCommunicator instance and loads subscriber data if the communicator is initialized.
+     *
+     * @param serverCommunicator the ServerCommunicator instance
+     */
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
         if (serverCommunicator != null) {
@@ -41,17 +80,21 @@ public class SubscriberInformationController {
         }
     }
 
+    /**
+     * Initializes the controller by setting up table columns.
+     */
     @FXML
     private void initialize() {
-        // Set up the columns
         idColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getId()));
         nameColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getName()));
         lastNameColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getLastName()));
         emailColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getEmail()));
         statusColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getStatus()));
-        //allReturnDatesColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getAllReturnDates()));
     }
 
+    /**
+     * Loads subscriber data from the server and populates the table.
+     */
     private void loadSubscriberData() {
         if (serverCommunicator == null) {
             showError("Server communicator is not initialized.");
@@ -71,6 +114,12 @@ public class SubscriberInformationController {
         }
     }
 
+    /**
+     * Parses subscriber data received from the server.
+     *
+     * @param data the raw subscriber data as a string
+     * @return a list of Subscriber objects
+     */
     private List<Subscriber> parseSubscribers(String data) {
         List<Subscriber> subscribers = new ArrayList<>();
         try {
@@ -94,7 +143,9 @@ public class SubscriberInformationController {
         return subscribers;
     }
 
-
+    /**
+     * Handles the search functionality by filtering subscribers by ID.
+     */
     @FXML
     private void handleSearch() {
         String searchText = searchField.getText().trim();
@@ -114,12 +165,20 @@ public class SubscriberInformationController {
         }
     }
 
+    /**
+     * Clears the search field and resets the table to show all subscribers.
+     */
     @FXML
     private void handleClearSearch() {
         searchField.clear();
         subscriberTable.setItems(subscriberList); // Reset the table to show all subscribers
     }
 
+    /**
+     * Displays an error message in an alert dialog.
+     *
+     * @param message the error message to display
+     */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");

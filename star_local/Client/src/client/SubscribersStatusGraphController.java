@@ -1,3 +1,7 @@
+/**
+ * Controller class for managing the Subscribers Status Graph.
+ * This class is responsible for displaying subscriber status data in a bar chart.
+ */
 package client;
 
 import javafx.fxml.FXML;
@@ -9,16 +13,31 @@ import java.util.Map;
 
 public class SubscribersStatusGraphController {
 
+    /**
+     * BarChart for displaying subscriber statuses by month.
+     */
     @FXML
     private BarChart<String, Number> statusBarChart;
 
+    /**
+     * Communicator for interacting with the server.
+     */
     private ServerCommunicator serverCommunicator;
 
+    /**
+     * Sets the ServerCommunicator instance and loads the subscriber status data.
+     *
+     * @param serverCommunicator the ServerCommunicator instance to be used for fetching data
+     */
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
         loadSubscriberStatusData();
     }
 
+    /**
+     * Loads subscriber status data from the server and populates the bar chart.
+     * The data is fetched in the format "status,month,count" and organized into chart series.
+     */
     private void loadSubscriberStatusData() {
         try {
             // Fetch subscriber status counts by month
@@ -58,8 +77,11 @@ public class SubscribersStatusGraphController {
         }
     }
 
-
-
+    /**
+     * Displays an error message in the console.
+     *
+     * @param message the error message to display
+     */
     private void showError(String message) {
         // Error display logic
         System.err.println(message);
