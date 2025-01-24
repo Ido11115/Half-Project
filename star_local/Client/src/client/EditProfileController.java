@@ -4,30 +4,50 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * The EditProfileController class manages the UI and logic for editing a subscriber's profile.
+ * It allows users to update their personal information, including name, last name, email,
+ * phone number, username, and password.
+ */
 public class EditProfileController {
 
     @FXML
     private TextField nameField;
+
     @FXML
     private TextField lastNameField;
+
     @FXML
     private TextField emailField;
+
     @FXML
     private TextField phoneField;
+
     @FXML
     private TextField usernameField;
+
     @FXML
     private PasswordField passwordField;
 
     private ServerCommunicator serverCommunicator;
     private int subscriberId;
 
+    /**
+     * Sets the ServerCommunicator and subscriber ID for this controller, then loads
+     * the subscriber's data into the form.
+     *
+     * @param serverCommunicator the ServerCommunicator used for server communication
+     * @param subscriberId the ID of the subscriber whose data is being edited
+     */
     public void setServerCommunicator(ServerCommunicator serverCommunicator, int subscriberId) {
         this.serverCommunicator = serverCommunicator;
         this.subscriberId = subscriberId;
         loadSubscriberData();
     }
 
+    /**
+     * Loads the subscriber's data from the server and populates the fields in the form.
+     */
     private void loadSubscriberData() {
         try {
             String response = serverCommunicator.sendRequest("GET_SUBSCRIBER_DATA," + subscriberId);
@@ -47,6 +67,11 @@ public class EditProfileController {
         }
     }
 
+    /**
+     * Handles saving changes to the subscriber's profile.
+     * Collects the data from the form, sends an update request to the server,
+     * and provides feedback to the user based on the server's response.
+     */
     @FXML
     private void handleSaveChanges() {
         try {
@@ -74,12 +99,20 @@ public class EditProfileController {
         }
     }
 
+    /**
+     * Handles the cancel action by closing the current stage.
+     */
     @FXML
     private void handleCancel() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * Displays an error message in an alert dialog.
+     *
+     * @param message the error message to display
+     */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -87,6 +120,11 @@ public class EditProfileController {
         alert.showAndWait();
     }
 
+    /**
+     * Displays an informational message in an alert dialog.
+     *
+     * @param message the informational message to display
+     */
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");

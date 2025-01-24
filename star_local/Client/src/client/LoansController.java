@@ -12,29 +12,47 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The LoansController class is responsible for managing and displaying loan records in the application.
+ * It interacts with a server to fetch loan data and populates a TableView with the details of each loan.
+ */
 public class LoansController {
 
     @FXML
     private TableView<Loan> loansTable;
+
     @FXML
     private TableColumn<Loan, Integer> loanIdColumn;
+
     @FXML
     private TableColumn<Loan, String> subscriberNameColumn;
+
     @FXML
     private TableColumn<Loan, Integer> bookIdColumn;
+
     @FXML
     private TableColumn<Loan, String> loanDateColumn;
+
     @FXML
     private TableColumn<Loan, String> returnDateColumn;
 
     private ServerCommunicator serverCommunicator;
+
     private ObservableList<Loan> loansList = FXCollections.observableArrayList();
 
+    /**
+     * Sets the ServerCommunicator for this controller and loads the loan data from the server.
+     *
+     * @param serverCommunicator the ServerCommunicator used for server communication
+     */
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
         loadLoansData();
     }
 
+    /**
+     * Initializes the TableView by binding the table columns to the Loan object properties.
+     */
     @FXML
     private void initialize() {
         loanIdColumn.setCellValueFactory(cellData -> cellData.getValue().loanIdProperty().asObject());
@@ -44,6 +62,10 @@ public class LoansController {
         returnDateColumn.setCellValueFactory(cellData -> cellData.getValue().returnDateProperty());
     }
 
+    /**
+     * Loads loan data from the server and populates the TableView.
+     * If no loans are found or an error occurs, an appropriate error message is displayed.
+     */
     @FXML
     private void loadLoansData() {
         try {
@@ -62,6 +84,12 @@ public class LoansController {
         }
     }
 
+    /**
+     * Parses the raw data string received from the server into a list of Loan objects.
+     *
+     * @param data the raw data string containing loan details
+     * @return a list of Loan objects parsed from the data
+     */
     private List<Loan> parseLoans(String data) {
         List<Loan> loans = new ArrayList<>();
         try {
@@ -85,7 +113,12 @@ public class LoansController {
         }
         return loans;
     }
-    
+
+    /**
+     * Displays an error message in an alert dialog.
+     *
+     * @param message the error message to display
+     */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -93,5 +126,4 @@ public class LoansController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 }

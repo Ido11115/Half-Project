@@ -6,8 +6,19 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * The ClientGUI class is the main entry point for the JavaFX application.
+ * It initializes and displays the GUI for connecting to a server.
+ */
 public class ClientGUI extends Application {
 
+    /**
+     * Starts the JavaFX application by loading the "Connect.fxml" file,
+     * setting up the primary stage, and showing the GUI.
+     *
+     * @param primaryStage the main stage for the application
+     * @throws Exception if an error occurs while loading the FXML file
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Connect.fxml"));
@@ -21,6 +32,11 @@ public class ClientGUI extends Application {
         primaryStage.show();
     }
 
+    /**
+     * The main method that launches the JavaFX application.
+     *
+     * @param args the command-line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }

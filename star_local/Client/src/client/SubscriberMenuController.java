@@ -1,3 +1,7 @@
+/**
+ * Controller class for managing the subscriber menu in the application.
+ * Provides functionality for navigating to different screens such as Search Book, My Profile, and Logout.
+ */
 package client;
 
 import java.io.IOException;
@@ -13,18 +17,37 @@ import javafx.stage.Stage;
 
 public class SubscriberMenuController {
 	
+	/**
+	 * Button for logging out the current subscriber.
+	 */
 	@FXML
 	private Button logoutButton;
 
+	/**
+	 * Communicator for interacting with the server.
+	 */
 	private ServerCommunicator serverCommunicator;
+
+	/**
+	 * ID of the currently logged-in subscriber.
+	 */
 	private int currentSubscriberId;
 
+	/**
+	 * Sets the ServerCommunicator instance and the current subscriber's ID.
+	 *
+	 * @param serverCommunicator the ServerCommunicator instance
+	 * @param subscriberId the ID of the current subscriber
+	 */
 	public void setServerCommunicator(ServerCommunicator serverCommunicator, int subscriberId) {
 	    this.serverCommunicator = serverCommunicator; // Assign the server communicator
 	    this.currentSubscriberId = subscriberId; // Assign the subscriber ID
 	}
 
-
+	/**
+	 * Handles the navigation to the Search Book screen.
+	 * Loads the SearchBook.fxml and passes the ServerCommunicator instance to the controller.
+	 */
 	@FXML
 	private void handleSearchBook() {
 		try {
@@ -44,8 +67,10 @@ public class SubscriberMenuController {
 		}
 	}
 
-
-
+	/**
+	 * Handles the navigation to the My Profile screen.
+	 * Loads the MyProfile.fxml and passes the ServerCommunicator instance and subscriber ID to the controller.
+	 */
 	@FXML
 	private void handleMyProfile() {
 	    try {
@@ -65,9 +90,11 @@ public class SubscriberMenuController {
 	    }
 	}
 
-
-
-
+	/**
+	 * Handles the logout process by closing the current stage and navigating to the login screen.
+	 *
+	 * @param event the ActionEvent triggered by the logout button
+	 */
 	@FXML
     private void handleLogout(ActionEvent event) {
         try {
@@ -93,9 +120,11 @@ public class SubscriberMenuController {
         }
     }
 	
-
-
-
+	/**
+	 * Displays an error message in the console.
+	 *
+	 * @param message the error message to display
+	 */
 	private void showError(String message) {
 		System.err.println(message);
 	}

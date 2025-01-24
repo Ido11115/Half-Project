@@ -9,14 +9,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ClientHandler implements Runnable {
-	private Socket clientSocket;
-	private DBHandler dbHandler;
 
-	public ClientHandler(Socket socket) {
-		this.clientSocket = socket;
-		this.dbHandler = new DBHandler(); // Instantiate DBHandler
-	}
+/**
+ * The {@code ClientHandler} class handles communication with a client connected via a socket.
+ * <p>
+ * This class is designed to process commands sent by the client, perform database interactions,
+ * and send appropriate responses back to the client.
+ * </p>
+ */
+public class ClientHandler implements Runnable {
+
+    /**
+     * The socket used for communication with the client.
+     */
+    private Socket clientSocket;
+
+    /**
+     * The database handler for interacting with the database.
+     */
+    private DBHandler dbHandler;
+
+    /**
+     * Constructs a {@code ClientHandler} instance.
+     *
+     * @param socket the socket representing the client's connection
+     */
+    public ClientHandler(Socket socket) {
+        this.clientSocket = socket;
+        this.dbHandler = new DBHandler(); // Instantiate DBHandler
+    }
 
 	@Override
 	public void run() {
@@ -85,6 +106,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+     * Handles the "LOGIN" command sent by the client.
+     *
+     * @param command the command for login
+     * @param writer  the writer used to send responses to the client
+     */
 	private void handleLogin(String command, PrintWriter writer) {
 	    String[] parts = command.split(",");
 	    if (parts.length != 4) {
@@ -122,6 +149,12 @@ public class ClientHandler implements Runnable {
 	}
 
 
+	/**
+     * Handles the "REGISTER_SUBSCRIBER" command sent by the client.
+     *
+     * @param command the command for registering a subscriber
+     * @param writer  the writer used to send responses to the client
+     */
 	private void handleRegisterSubscriber(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 9) {
@@ -150,6 +183,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+     * Handles the "LOAN_BOOK" command sent by the client.
+     *
+     * @param command the command for loaning a book
+     * @param writer  the writer used to send responses to the client
+     */
 	private void handleLoanBook(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 5) {
@@ -183,6 +222,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+     * Handles the "RETURN_BOOK" command sent by the client.
+     *
+     * @param command the command for returning a book
+     * @param writer  the writer used to send responses to the client
+     */
 	private void handleReturnBook(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 3) {
@@ -209,6 +254,11 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+     * Handles the "GET_SUBSCRIBERS" command sent by the client.
+     *
+     * @param writer the writer used to send responses to the client
+     */
 	private void handleGetSubscribersRequest(PrintWriter writer) {
 		try {
 			String subscriberData = dbHandler.getAllSubscribersAsString();
@@ -219,6 +269,13 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "GET_SUBSCRIPTION_HISTORY" command by retrieving the subscription history
+	 * of a specific subscriber and sending it to the client.
+	 *
+	 * @param command the command in the format "GET_SUBSCRIPTION_HISTORY,subscriberId"
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleGetSubscriptionHistory(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 2) {
@@ -237,6 +294,13 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "GET_SUBSCRIBER_STATUS" command by retrieving the status of a specific subscriber
+	 * and sending it to the client.
+	 *
+	 * @param command the command in the format "GET_SUBSCRIBER_STATUS,subscriberId"
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleGetSubscriberStatus(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 2) {
@@ -255,6 +319,13 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "SAVE_SUBSCRIPTION_HISTORY" command by saving the subscription history actions
+	 * for a specific subscriber and sending a confirmation to the client.
+	 *
+	 * @param command the command in the format "SAVE_SUBSCRIPTION_HISTORY,subscriberId,action1,action2,..."
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleSaveSubscriptionHistory(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length < 3) {
@@ -277,6 +348,13 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "UPDATE_SUBSCRIBER_STATUS" command by updating the status of a subscriber
+	 * and sending a confirmation to the client.
+	 *
+	 * @param command the command in the format "UPDATE_SUBSCRIBER_STATUS,subscriberId,newStatus"
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleUpdateSubscriberStatus(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 3) {
@@ -298,6 +376,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "GET_SUBSCRIBER_STATUS_COUNTS_BY_MONTH" command by retrieving monthly status counts
+	 * and sending the result to the client.
+	 *
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleGetSubscriberStatusCountsByMonth(PrintWriter writer) {
 		try {
 			String statusCounts = dbHandler.getSubscriberStatusCountsByMonth();
@@ -309,6 +393,11 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "GET_LOANS_TIME" command to retrieve the total loan time and sends it to the client.
+	 *
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleGetLoansTime(PrintWriter writer) {
 		try {
 			String loanData = dbHandler.getLoansTime();
@@ -320,6 +409,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "SEARCH_BOOK" command to search for books based on a query and sends the result to the client.
+	 *
+	 * @param command the command in the format "SEARCH_BOOK,query"
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleSearchBook(String command, PrintWriter writer) {
 		String[] parts = command.split(",", 2);
 		if (parts.length != 2) {
@@ -337,6 +432,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "RESERVE_BOOK" command to reserve a book for a subscriber and sends the confirmation to the client.
+	 *
+	 * @param command the command in the format "RESERVE_BOOK,bookId"
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleReserveBook(String command, PrintWriter writer) {
 		String[] parts = command.split(",", 2);
 		if (parts.length != 2) {
@@ -354,6 +455,11 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "GET_PROFILE" command to retrieve the current subscriber's profile data and sends it to the client.
+	 *
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleGetProfile(PrintWriter writer) {
 		try {
 			int subscriberId = dbHandler.getCurrentSubscriberId();
@@ -370,6 +476,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "UPDATE_PROFILE" command to update the subscriber's profile information and sends a confirmation to the client.
+	 *
+	 * @param command the command in the format "UPDATE_PROFILE,id,name,lastName,email,phone,username,password"
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleUpdateProfile(String command, PrintWriter writer) {
 		String[] parts = command.split(",", 8);
 		if (parts.length != 8) {
@@ -395,6 +507,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "GET_SUBSCRIBER_DATA" command to retrieve data for a specific subscriber and sends it to the client.
+	 *
+	 * @param command the command in the format "GET_SUBSCRIBER_DATA,subscriberId"
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleGetSubcriberData(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 2) {
@@ -413,6 +531,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "UPDATE_SUBSCRIBER_DATA" command to update a subscriber's data and sends a confirmation to the client.
+	 *
+	 * @param command the command in the format "UPDATE_SUBSCRIBER_DATA,id,name,lastName,email,phone,username,password"
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleUpdateSubscriberData(String command, PrintWriter writer) {
 		String[] parts = command.split(",", 8);
 		if (parts.length != 8) {
@@ -438,6 +562,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "GET_DUE_BOOKS" command to retrieve books that are due for a specific subscriber and sends it to the client.
+	 *
+	 * @param command the command in the format "GET_DUE_BOOKS,subscriberId"
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleGetDueBooks(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 2) {
@@ -456,6 +586,11 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the "GET_LOANS" command to retrieve all active loans and sends them to the client.
+	 *
+	 * @param writer the writer used to send the response to the client
+	 */
 	private void handleGetLoans(PrintWriter writer) {
 		try {
 			List<String> loans = dbHandler.getAllLoansAsString(); // Returns loans as a formatted string

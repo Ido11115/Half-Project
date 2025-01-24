@@ -4,36 +4,56 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * The RegisterSubscriberController class handles the registration of new subscribers.
+ * It collects user input, validates the data, sends a registration request to the server,
+ * and provides feedback based on the server's response.
+ */
 public class RegisterSubscriberController {
 
     @FXML
     private TextField subscriberIdField;
+
     @FXML
     private TextField nameField;
+
     @FXML
     private TextField lastNameField;
+
     @FXML
     private TextField userNameField;
+
     @FXML
     private TextField phoneField;
+
     @FXML
     private TextField emailField;
+
     @FXML
     private PasswordField passwordField;
+
     @FXML
     private ChoiceBox<String> statusChoiceBox;
+
     @FXML
     private Label errorLabel;
 
     private ServerCommunicator serverCommunicator;
 
+    /**
+     * Sets the ServerCommunicator instance for this controller.
+     *
+     * @param serverCommunicator the ServerCommunicator used for server communication
+     */
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
     }
 
+    /**
+     * Initializes the controller, populating the status choice box with default values.
+     */
     @FXML
     private void initialize() {
-        // Populate the ChoiceBox programmatically
         if (statusChoiceBox != null) {
             statusChoiceBox.getItems().addAll("Active", "Inactive");
             statusChoiceBox.setValue("Active"); // Default selection
@@ -42,6 +62,10 @@ public class RegisterSubscriberController {
         }
     }
 
+    /**
+     * Handles the registration process for a new subscriber. Validates input fields,
+     * sends a registration request to the server, and displays feedback based on the response.
+     */
     @FXML
     private void handleRegister() {
         String idText = subscriberIdField.getText().trim();

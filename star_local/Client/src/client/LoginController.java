@@ -9,43 +9,63 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * The LoginController class manages the login and registration functionalities for the application.
+ * It allows users to log in as either a Subscriber or a Librarian and register new subscribers.
+ */
 public class LoginController {
 
-    // Login fields
     @FXML
     private RadioButton subscriberRadioButton;
+
     @FXML
     private RadioButton librarianRadioButton;
+
     @FXML
     private TextField usernameField;
+
     @FXML
     private PasswordField passwordField;
+
     @FXML
     private Label errorLabel;
 
-    // Register fields
     @FXML
     private TextField subscriberIdField;
+
     @FXML
     private TextField nameField;
+
     @FXML
     private TextField emailField;
+
     @FXML
     private TextField phoneField;
+
     @FXML
     private PasswordField registerPasswordField;
+
     @FXML
     private Label registerErrorLabel;
-    
-	@FXML
-	private Button loginButton;
+
+    @FXML
+    private Button loginButton;
 
     private ServerCommunicator serverCommunicator;
 
+    /**
+     * Sets the ServerCommunicator instance for this controller.
+     *
+     * @param serverCommunicator the ServerCommunicator used for server communication
+     */
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
     }
 
+    /**
+     * Initializes the controller, setting up default configurations such as the toggle group
+     * for the role selection radio buttons.
+     */
     @FXML
     public void initialize() {
         ToggleGroup roleGroup = new ToggleGroup();
@@ -56,9 +76,10 @@ public class LoginController {
         subscriberRadioButton.setSelected(true);
     }
 
-
-
-
+    /**
+     * Handles the login process. Validates user input, sends a login request to the server,
+     * and navigates to the appropriate menu (Subscriber or Librarian) upon successful login.
+     */
     @FXML
     private void handleLogin() {
         String username = usernameField.getText().trim();
@@ -87,7 +108,7 @@ public class LoginController {
                 int subscriberId = -1;
 
                 if (parts.length > 1) {
-                    subscriberId = Integer.parseInt(parts[1]); // Extract subscriber ID
+                    subscriberId = Integer.parseInt(parts[1]);
                 }
 
                 if ("Subscriber".equalsIgnoreCase(role)) {
@@ -104,7 +125,9 @@ public class LoginController {
         }
     }
 
-
+    /**
+     * Loads the librarian menu upon successful login as a librarian.
+     */
     private void loadLibrarianMenu() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("LibrarianMenu.fxml"));
@@ -123,6 +146,10 @@ public class LoginController {
         }
     }
 
+    /**
+     * Handles the registration process for new subscribers. Validates user input,
+     * sends a registration request to the server, and provides feedback based on the server's response.
+     */
     @FXML
     private void handleRegister() {
         String idText = subscriberIdField.getText().trim();
@@ -159,17 +186,20 @@ public class LoginController {
             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * Loads the subscriber menu upon successful login as a subscriber. Also checks for any books due soon.
+     *
+     * @param subscriberId the ID of the logged-in subscriber
+     */
     private void loadSubscriberMenu(int subscriberId) {
         try {
-            // Check for due books
             String dueBooksResponse = serverCommunicator.sendRequest("GET_DUE_BOOKS," + subscriberId);
 
             if (!"No books due soon.".equals(dueBooksResponse)) {
                 showDueBooksPopup(dueBooksResponse);
             }
 
-            // Load the Subscriber Menu
             FXMLLoader loader = new FXMLLoader(getClass().getResource("SubscriberMenu.fxml"));
             Parent root = loader.load();
 
@@ -188,22 +218,30 @@ public class LoginController {
         }
     }
 
+    /**
+     * Displays a popup with information about books due soon.
+     *
+     * @param dueBooks the details of the books that are due soon
+     */
     private void showDueBooksPopup(String dueBooks) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Books Due Soon");
-        alert.setHeaderText("You have books due soon:check mail");
+        alert.setHeaderText("You have books due soon: check mail");
         alert.setContentText(dueBooks);
         alert.showAndWait();
     }
 
+    /**
+     * Closes the current stage of the application.
+     */
     private void closeCurrentStage() {
         Stage stage = (Stage) usernameField.getScene().getWindow();
         stage.close();
     }
 
-
-
-
+    /**
+     * Handles the logout process by closing the current stage.
+     */
     @FXML
     private void handleLogout() {
         try {
@@ -215,6 +253,11 @@ public class LoginController {
         }
     }
 
+    /**
+     * Displays an error message in an alert dialog.
+     *
+     * @param message the error message to display
+     */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");

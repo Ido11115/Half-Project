@@ -9,43 +9,65 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The SearchBookController class handles the functionality for searching books in the library system.
+ * It allows users to search for books, view search results, and optionally reserve unavailable books.
+ */
 public class SearchBookController {
 
     @FXML
     private TextField searchField;
+
     @FXML
     private TableView<Book> bookTable;
+
     @FXML
     private TableColumn<Book, String> nameColumn;
+
     @FXML
     private TableColumn<Book, String> authorColumn;
+
     @FXML
     private TableColumn<Book, Integer> availableCopiesColumn;
+
     @FXML
     private TableColumn<Book, String> locationColumn;
+
     @FXML
     private Label errorLabel;
 
     private ServerCommunicator serverCommunicator;
+
     private ObservableList<Book> bookList = FXCollections.observableArrayList();
 
+    /**
+     * Sets the ServerCommunicator for this controller.
+     *
+     * @param serverCommunicator the ServerCommunicator used for server communication
+     */
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
     }
 
+    /**
+     * Initializes the controller by binding the TableView columns to the properties of the Book class
+     * and setting the table's items to the observable book list.
+     */
     @FXML
     private void initialize() {
-        // Bind columns to Book properties
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         authorColumn.setCellValueFactory(cellData -> cellData.getValue().authorProperty());
         availableCopiesColumn.setCellValueFactory(cellData -> cellData.getValue().availableCopiesProperty().asObject());
         locationColumn.setCellValueFactory(cellData -> cellData.getValue().locationProperty());
 
-        // Set the table items
         bookTable.setItems(bookList);
     }
 
-
+    /**
+     * Handles the search functionality by sending a search request to the server and updating
+     * the TableView with the results. Displays appropriate messages if no results are found
+     * or if there is an error communicating with the server.
+     */
     @FXML
     private void handleSearch() {
         String searchText = searchField.getText().trim();
@@ -73,8 +95,10 @@ public class SearchBookController {
         }
     }
 
-
-
+    /**
+     * Handles the reserve functionality by sending a reserve request to the server for the selected book.
+     * Displays appropriate messages if no book is selected or if the book is already available.
+     */
     @FXML
     private void handleReserve() {
         Book selectedBook = bookTable.getSelectionModel().getSelectedItem();
@@ -103,10 +127,12 @@ public class SearchBookController {
         }
     }
 
-
-
-
-
+    /**
+     * Parses the raw data string received from the server into a list of Book objects.
+     *
+     * @param data the raw data string containing book details
+     * @return a list of Book objects parsed from the data
+     */
     private List<Book> parseBooks(String data) {
         List<Book> books = new ArrayList<>();
         try {
@@ -131,9 +157,5 @@ public class SearchBookController {
         }
         return books;
     }
-
-
-
-
 
 }
