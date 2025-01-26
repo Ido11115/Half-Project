@@ -1,11 +1,15 @@
 package client;
 
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +52,7 @@ public class LoansController {
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
         loadLoansData();
+
     }
 
     /**
@@ -55,12 +60,24 @@ public class LoansController {
      */
     @FXML
     private void initialize() {
-        loanIdColumn.setCellValueFactory(cellData -> cellData.getValue().loanIdProperty().asObject());
-        subscriberNameColumn.setCellValueFactory(cellData -> cellData.getValue().subscriberNameProperty());
-        bookIdColumn.setCellValueFactory(cellData -> cellData.getValue().bookIdProperty().asObject());
-        loanDateColumn.setCellValueFactory(cellData -> cellData.getValue().loanDateProperty());
-        returnDateColumn.setCellValueFactory(cellData -> cellData.getValue().returnDateProperty());
+        loanIdColumn.setCellValueFactory(cellData -> 
+            new SimpleObjectProperty<>(cellData.getValue().getLoanId()));
+        subscriberNameColumn.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getSubscriberName()));
+        bookIdColumn.setCellValueFactory(cellData -> 
+            new SimpleObjectProperty<>(cellData.getValue().getBookId()));
+        loanDateColumn.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getLoanDate()));
+        returnDateColumn.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getReturnDate()));
+
+        loansTable.setItems(loansList); // Bind loanList to TableView
     }
+
+
+
+
+
 
     /**
      * Loads loan data from the server and populates the TableView.
@@ -90,11 +107,13 @@ public class LoansController {
      * @param data the raw data string containing loan details
      * @return a list of Loan objects parsed from the data
      */
-    private List<Loan> parseLoans(String data) {
+    private List<Loan> parseLoans(String response) {
         List<Loan> loans = new ArrayList<>();
         try {
-            String[] entries = data.split(";");
+            String[] entries = response.split(";");
             for (String entry : entries) {
+                System.out.println("Parsing entry: " + entry); // Debug log
+
                 String[] details = entry.split(",");
                 if (details.length == 6) {
                     loans.add(new Loan(
@@ -105,14 +124,108 @@ public class LoansController {
                         details[4], // Return Date
                         details[5]  // Subscriber Name
                     ));
+                } else {
+                    System.err.println("Invalid loan entry: " + entry); // Debug invalid entries
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error parsing loans data: " + e.getMessage());
             e.printStackTrace();
+            showError("Error parsing loans: " + e.getMessage());
         }
         return loans;
     }
+
+
+
+    
+    @FXML
+    private void handleProlongLoan() {
+        Loan selectedLoan = loansTable.getSelectionModel().getSelectedItem();
+        if (selectedLoan == null) {
+            showError("No loan selected. Please select a loan to prolong.");
+            return;
+        }
+
+        try {
+            // Check if the book is reserved
+            if (serverCommunicator.isBookReserved(selectedLoan.getBookId())) {
+                showError("This book is reserved by another subscriber. Prolongation is not allowed.");
+                return;
+            }
+
+            // Prompt the librarian for a new return date
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Prolong Loan");
+            dialog.setHeaderText("Prolong the loan for Book ID: " + selectedLoan.getBookId());
+            dialog.setContentText("Enter new return date (YYYY-MM-DD):");
+
+            dialog.showAndWait().ifPresent(newReturnDate -> {
+                try {
+                    // Prolong the loan
+                    String response = serverCommunicator.prolongLoan(selectedLoan.getLoanId(), newReturnDate);
+                    if ("Prolongation successful".equals(response)) {
+                        showInfo("Loan successfully prolonged.");
+                        loadLoans(); // Refresh loans table
+                    } else {
+                        showError(response);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    showError("Error communicating with the server: " + e.getMessage());
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Error communicating with the server: " + e.getMessage());
+        }
+    }
+
+    
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null); // Optional: Hide the header
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    
+    private void loadLoans() {
+        if (serverCommunicator == null) {
+            showError("Server communicator is not initialized.");
+            return;
+        }
+
+        try {
+            String response = serverCommunicator.sendRequest("GET_LOANS");
+            System.out.println("Server Response in Client: " + response); // Debug log
+
+            if (response.isEmpty() || response.equalsIgnoreCase("No loans found.")) {
+                showError("No loans found.");
+                return;
+            }
+
+            List<Loan> loans = parseLoans(response);
+            System.out.println("Parsed Loans: " + loans); // Debug log
+
+            loansList.setAll(loans); // Populate TableView
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error loading loans: " + e.getMessage());
+        }
+    }
+
+
+
+    
+    
+    
+    
+
+    
+    
+    
+
 
     /**
      * Displays an error message in an alert dialog.

@@ -22,6 +22,9 @@ public class LibrarianMenuController {
 
     @FXML
     private Button logoutButton;
+    
+    @FXML
+    private Button loansButton;
 
     /**
      * Sets the ServerCommunicator instance for this controller.
@@ -221,8 +224,8 @@ public class LibrarianMenuController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Loans.fxml"));
             Parent root = loader.load();
 
-            LoansController controller = loader.getController();
-            controller.setServerCommunicator(serverCommunicator);
+            LoansController loansController = loader.getController();
+            loansController.setServerCommunicator(serverCommunicator); // Pass the serverCommunicator
 
             Stage stage = new Stage();
             stage.setTitle("Loans");
@@ -233,6 +236,7 @@ public class LibrarianMenuController {
             showError("Error loading Loans screen: " + e.getMessage());
         }
     }
+
 
     /**
      * Displays an error message in an alert dialog.

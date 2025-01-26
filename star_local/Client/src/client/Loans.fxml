@@ -15,4 +15,7 @@
             <TableColumn fx:id="returnDateColumn" text="Return Date" />
         </columns>
     </TableView>
+    
+    <Button text="Prolong Loan" onAction="#handleProlongLoan" />
+    
 </VBox>
