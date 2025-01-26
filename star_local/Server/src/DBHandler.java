@@ -894,31 +894,27 @@ public class DBHandler {
 	 * @throws SQLException If an SQL error occurs during the operation.
 	 */
 	public List<String> getAllLoansAsString() throws SQLException {
-	    String query = """
-	        SELECT l.loan_id, l.subscriber_id, l.book_id, l.loan_date, l.return_date, s.subscriber_name
-	        FROM loans l
-	        JOIN subscribe s ON l.subscriber_id = s.subscriber_id
-	    """;
+		String query = """
+				    SELECT l.loan_id, l.subscriber_id, l.book_id, l.loan_date, l.return_date, s.subscriber_name
+				    FROM loans l
+				    JOIN subscribe s ON l.subscriber_id = s.subscriber_id
+				""";
 
-	    List<String> loans = new ArrayList<>();
-	    try (Connection connection = connect();
-	         PreparedStatement preparedStatement = connection.prepareStatement(query);
-	         ResultSet resultSet = preparedStatement.executeQuery()) {
+		List<String> loans = new ArrayList<>();
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(query);
+				ResultSet resultSet = preparedStatement.executeQuery()) {
 
-	        while (resultSet.next()) {
-	            String loan = resultSet.getInt("loan_id") + "," +
-	                          resultSet.getInt("subscriber_id") + "," +
-	                          resultSet.getInt("book_id") + "," +
-	                          resultSet.getString("loan_date") + "," +
-	                          resultSet.getString("return_date") + "," +
-	                          resultSet.getString("subscriber_name");
-	            System.out.println("Fetched Loan: " + loan); // Debug log
-	            loans.add(loan);
-	        }
-	    }
-	    return loans;
+			while (resultSet.next()) {
+				String loan = resultSet.getInt("loan_id") + "," + resultSet.getInt("subscriber_id") + ","
+						+ resultSet.getInt("book_id") + "," + resultSet.getString("loan_date") + ","
+						+ resultSet.getString("return_date") + "," + resultSet.getString("subscriber_name");
+				System.out.println("Fetched Loan: " + loan); // Debug log
+				loans.add(loan);
+			}
+		}
+		return loans;
 	}
-
 
 	public boolean isBookReserved(int bookId) throws SQLException {
 		String query = "SELECT COUNT(*) FROM reserve_books WHERE book_id = ?";
@@ -943,23 +939,32 @@ public class DBHandler {
 			return preparedStatement.executeUpdate() > 0; // True if the update was successful
 		}
 	}
-	
+
 	public int getBookIdByLoanId(int loanId) throws SQLException {
-	    String query = "SELECT book_id FROM loans WHERE loan_id = ?";
-	    try (Connection connection = connect();
-	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-	        preparedStatement.setInt(1, loanId);
-	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-	            if (resultSet.next()) {
-	                return resultSet.getInt("book_id");
-	            } else {
-	                throw new SQLException("No loan found with the given loan ID: " + loanId);
-	            }
-	        }
-	    }
+		String query = "SELECT book_id FROM loans WHERE loan_id = ?";
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setInt(1, loanId);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				if (resultSet.next()) {
+					return resultSet.getInt("book_id");
+				} else {
+					throw new SQLException("No loan found with the given loan ID: " + loanId);
+				}
+			}
+		}
 	}
 
-	
-	
+	public void deleteSubscriber(int subscriberId) throws SQLException {
+		String query = "DELETE FROM subscribe WHERE subscriber_id = ?";
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setInt(1, subscriberId);
+			int rowsAffected = preparedStatement.executeUpdate();
+			if (rowsAffected == 0) {
+				throw new SQLException("No subscriber found with ID: " + subscriberId);
+			}
+		}
+	}
 
 }

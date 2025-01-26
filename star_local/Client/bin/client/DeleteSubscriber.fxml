@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="client.DeleteSubscriberController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <Label text="Delete Subscriber" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="subscriberIdField" promptText="Enter Subscriber ID" />
+
+    <Button text="Delete" onAction="#handleDelete" />
+    <Button text="Cancel" onAction="#handleCancel" />
+</VBox>

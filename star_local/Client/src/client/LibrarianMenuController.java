@@ -236,6 +236,26 @@ public class LibrarianMenuController {
             showError("Error loading Loans screen: " + e.getMessage());
         }
     }
+    
+    @FXML
+    private void handleDeleteSubscriber() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("DeleteSubscriber.fxml"));
+            Parent root = loader.load();
+
+            DeleteSubscriberController controller = loader.getController();
+            controller.setServerCommunicator(serverCommunicator); // Pass the ServerCommunicator
+
+            Stage stage = new Stage();
+            stage.setTitle("Delete Subscriber");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Error loading Delete Subscriber screen: " + e.getMessage());
+        }
+    }
+
 
 
     /**

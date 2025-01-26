@@ -93,6 +93,8 @@ public class ClientHandler implements Runnable {
 					handleGetLoans(writer);
 				} else if (command.startsWith("PROLONG_LOAN")) {
 					handleProlongLoan(command, writer);
+				} else if (command.startsWith("DELETE_SUBSCRIBER")) {
+					handleDeleteSubscriber(command, writer);
 				} else {
 					writer.println("Unknown command");
 				}
@@ -605,22 +607,21 @@ public class ClientHandler implements Runnable {
 	 * @param writer the writer used to send the response to the client
 	 */
 	private void handleGetLoans(PrintWriter writer) {
-	    try {
-	        List<String> loans = dbHandler.getAllLoansAsString();
-	        if (loans.isEmpty()) {
-	            writer.println("No loans found.");
-	            System.out.println("No loans found in the database."); // Debug log
-	        } else {
-	            String response = String.join(";", loans);
-	            writer.println(response);
-	            System.out.println("Server Response: " + response); // Debug log
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        writer.println("Error fetching loans: " + e.getMessage());
-	    }
+		try {
+			List<String> loans = dbHandler.getAllLoansAsString();
+			if (loans.isEmpty()) {
+				writer.println("No loans found.");
+				System.out.println("No loans found in the database."); // Debug log
+			} else {
+				String response = String.join(";", loans);
+				writer.println(response);
+				System.out.println("Server Response: " + response); // Debug log
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error fetching loans: " + e.getMessage());
+		}
 	}
-
 
 	private void handleProlongLoan(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
@@ -651,6 +652,23 @@ public class ClientHandler implements Runnable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			writer.println("Error processing prolongation: " + e.getMessage());
+		}
+	}
+
+	private void handleDeleteSubscriber(String command, PrintWriter writer) {
+		String[] parts = command.split(",");
+		if (parts.length != 2) {
+			writer.println("Invalid command format. Expected: DELETE_SUBSCRIBER,subscriberId");
+			return;
+		}
+
+		try {
+			int subscriberId = Integer.parseInt(parts[1]);
+			dbHandler.deleteSubscriber(subscriberId);
+			writer.println("Delete successful");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			writer.println("Error deleting subscriber: " + e.getMessage());
 		}
 	}
 
