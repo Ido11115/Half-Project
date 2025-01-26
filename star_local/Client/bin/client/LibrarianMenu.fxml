@@ -13,6 +13,11 @@
 	<Button text="Register a New Subscriber"
 		onAction="#handleRegisterSubscriber" />
 
+	<Button text="Delete Subscriber"
+		onAction="#handleDeleteSubscriber" />
+
+	<Button text="Books" onAction="#handleBooks" />
+
 	<!-- Loan Book -->
 	<Button text="Loan Book to a Subscriber"
 		onAction="#handleLoanBook" />
