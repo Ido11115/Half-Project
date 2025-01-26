@@ -967,4 +967,50 @@ public class DBHandler {
 		}
 	}
 
+	public List<String> getAllBooksAsString() throws SQLException {
+	    String query = "SELECT * FROM books";
+	    List<String> books = new ArrayList<>();
+
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query);
+	         ResultSet resultSet = preparedStatement.executeQuery()) {
+	        while (resultSet.next()) {
+	            books.add(resultSet.getInt("id") + "," +
+	                      resultSet.getString("name") + "," +
+	                      resultSet.getString("author") + "," +
+	                      resultSet.getString("subject") + "," +
+	                      resultSet.getInt("available_copies") + "," +
+	                      resultSet.getString("location") + "," +
+	                      resultSet.getString("description"));
+	        }
+	    }
+	    return books;
+	}
+
+	public void addBook(String name, String author, String subject, int copies, String location, String description) throws SQLException {
+	    String query = "INSERT INTO books (name, author, subject, available_copies, location, description) VALUES (?, ?, ?, ?, ?, ?)";
+
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        preparedStatement.setString(1, name);
+	        preparedStatement.setString(2, author);
+	        preparedStatement.setString(3, subject);
+	        preparedStatement.setInt(4, copies);
+	        preparedStatement.setString(5, location);
+	        preparedStatement.setString(6, description);
+	        preparedStatement.executeUpdate();
+	    }
+	}
+
+	public void deleteBook(String name) throws SQLException {
+	    String query = "DELETE FROM books WHERE name = ?";
+
+	    try (Connection connection = connect();
+	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        preparedStatement.setString(1, name);
+	        preparedStatement.executeUpdate();
+	    }
+	}
+
+
 }

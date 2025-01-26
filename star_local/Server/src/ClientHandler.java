@@ -95,6 +95,12 @@ public class ClientHandler implements Runnable {
 					handleProlongLoan(command, writer);
 				} else if (command.startsWith("DELETE_SUBSCRIBER")) {
 					handleDeleteSubscriber(command, writer);
+				} else if (command.equals("GET_BOOKS")) {
+					handleGetBooks(writer);
+				} else if (command.startsWith("DELETE_BOOK")) {
+					handleDeleteBook(command, writer);
+				} else if (command.startsWith("ADD_BOOK")) {
+					handleAddBook(command, writer);
 				} else {
 					writer.println("Unknown command");
 				}
@@ -671,5 +677,60 @@ public class ClientHandler implements Runnable {
 			writer.println("Error deleting subscriber: " + e.getMessage());
 		}
 	}
+	private void handleGetBooks(PrintWriter writer) {
+	    try {
+	        List<String> books = dbHandler.getAllBooksAsString();
+	        if (books.isEmpty()) {
+	            writer.println("No books found.");
+	        } else {
+	            writer.println(String.join(";", books));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        writer.println("Error fetching books: " + e.getMessage());
+	    }
+	}
+
+	private void handleAddBook(String command, PrintWriter writer) {
+	    String[] parts = command.split(",", 7);
+	    if (parts.length != 7) {
+	        writer.println("Invalid command format. Expected: ADD_BOOK,name,author,subject,copies,location,description");
+	        return;
+	    }
+
+	    String name = parts[1];
+	    String author = parts[2];
+	    String subject = parts[3];
+	    int copies = Integer.parseInt(parts[4]);
+	    String location = parts[5];
+	    String description = parts[6];
+
+	    try {
+	        dbHandler.addBook(name, author, subject, copies, location, description);
+	        writer.println("Book added successfully.");
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        writer.println("Error adding book: " + e.getMessage());
+	    }
+	}
+
+	private void handleDeleteBook(String command, PrintWriter writer) {
+	    String[] parts = command.split(",", 2);
+	    if (parts.length != 2) {
+	        writer.println("Invalid command format. Expected: DELETE_BOOK,name");
+	        return;
+	    }
+
+	    String name = parts[1];
+
+	    try {
+	        dbHandler.deleteBook(name);
+	        writer.println("Book deleted successfully.");
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        writer.println("Error deleting book: " + e.getMessage());
+	    }
+	}
+
 
 }

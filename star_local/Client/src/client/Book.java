@@ -39,6 +39,9 @@ public class Book {
         this.description = new SimpleStringProperty(description);
         this.closestReturnDate = new SimpleStringProperty(closestReturnDate);
     }
+    
+
+    
 
     /**
      * Constructs a Book without the closest return date.
