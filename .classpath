@@ -54,5 +54,10 @@
 	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Project/prototype/Final_stage/jackson-core-2.2.3.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Project/prototype/Final_stage/jackson-databind-2.2.3.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ido Ben Amara/Documents/Study/semseter 5/Project/prototype/Final_stage/jackson-annotations-2.2.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="star_local/Client/bin"/>
 </classpath>
