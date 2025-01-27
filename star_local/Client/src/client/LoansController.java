@@ -22,6 +22,17 @@ import java.util.List;
  */
 public class LoansController {
 
+	/**
+     * Default constructor for the LoansController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public LoansController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private TableView<Loan> loansTable;
 

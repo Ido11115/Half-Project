@@ -15,6 +15,17 @@ import java.util.List;
  */
 public class ReserveBookController {
 
+	/**
+     * Default constructor for the ReserveBookController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public ReserveBookController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private TextField searchField;
 

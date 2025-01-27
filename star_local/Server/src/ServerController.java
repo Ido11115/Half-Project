@@ -12,6 +12,17 @@ import java.util.List;
  */
 public class ServerController {
 
+	/**
+     * Default constructor for the ServerController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public ServerController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private TextField ipField;
 

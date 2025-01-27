@@ -85,56 +85,80 @@ public class Book {
     // Properties for JavaFX bindings
 
     /**
-     * @return the name property
+     * Returns the property representing the name of the book.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the name property of the book
      */
     public StringProperty nameProperty() {
         return name;
     }
 
     /**
-     * @return the author property
+     * Returns the property representing the author of the book.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the author property of the book
      */
     public StringProperty authorProperty() {
         return author;
     }
 
     /**
-     * @return the closest return date property
+     * Returns the property representing the closest return date for borrowed copies.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the closest return date property of the book
      */
     public StringProperty closestReturnDateProperty() {
         return closestReturnDate;
     }
 
     /**
-     * @return the id property
+     * Returns the property representing the unique identifier of the book.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the id property of the book
      */
     public IntegerProperty idProperty() {
         return id;
     }
 
     /**
-     * @return the available copies property
+     * Returns the property representing the number of available copies.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the available copies property of the book
      */
     public IntegerProperty availableCopiesProperty() {
         return availableCopies;
     }
 
     /**
-     * @return the location property
+     * Returns the property representing the location of the book.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the location property of the book
      */
     public StringProperty locationProperty() {
         return location;
     }
 
     /**
-     * @return the subject property
+     * Returns the property representing the subject of the book.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the subject property of the book
      */
     public StringProperty subjectProperty() {
         return subject;
     }
 
     /**
-     * @return the description property
+     * Returns the property representing the description of the book.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the description property of the book
      */
     public StringProperty descriptionProperty() {
         return description;
@@ -143,6 +167,8 @@ public class Book {
     // Getters
 
     /**
+     * Retrieves the name of the book.
+     *
      * @return the name of the book
      */
     public String getName() {
@@ -150,6 +176,8 @@ public class Book {
     }
 
     /**
+     * Retrieves the author of the book.
+     *
      * @return the author of the book
      */
     public String getAuthor() {
@@ -157,27 +185,35 @@ public class Book {
     }
 
     /**
-     * @return the closest return date for borrowed copies
+     * Retrieves the closest return date for borrowed copies of the book.
+     *
+     * @return the closest return date for the book
      */
     public String getClosestReturnDate() {
         return closestReturnDate.get();
     }
 
     /**
-     * @return the unique identifier of the book
+     * Retrieves the unique identifier of the book.
+     *
+     * @return the id of the book
      */
     public int getId() {
         return id.get();
     }
 
     /**
-     * @return the number of available copies
+     * Retrieves the number of available copies of the book.
+     *
+     * @return the number of available copies of the book
      */
     public int getAvailableCopies() {
         return availableCopies.get();
     }
 
     /**
+     * Retrieves the location of the book in the library.
+     *
      * @return the location of the book
      */
     public String getLocation() {
@@ -185,6 +221,8 @@ public class Book {
     }
 
     /**
+     * Retrieves the subject of the book.
+     *
      * @return the subject of the book
      */
     public String getSubject() {
@@ -192,7 +230,9 @@ public class Book {
     }
 
     /**
-     * @return a brief description of the book
+     * Retrieves a brief description of the book.
+     *
+     * @return the description of the book
      */
     public String getDescription() {
         return description.get();

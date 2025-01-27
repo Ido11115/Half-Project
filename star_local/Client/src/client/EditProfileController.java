@@ -11,6 +11,17 @@ import javafx.stage.Stage;
  */
 public class EditProfileController {
 
+	/**
+     * Default constructor for the EditProfileController class.
+     * <p>
+     * Initializes the controller without any specific parameters. All required
+     * fields are set by the FXML loader.
+     * </p>
+     */
+    public EditProfileController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private TextField nameField;
 

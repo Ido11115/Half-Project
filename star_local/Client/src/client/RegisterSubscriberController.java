@@ -11,6 +11,17 @@ import javafx.stage.Stage;
  */
 public class RegisterSubscriberController {
 
+	/**
+     * Default constructor for the RegisterSubscriberController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public RegisterSubscriberController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private TextField subscriberIdField;
 

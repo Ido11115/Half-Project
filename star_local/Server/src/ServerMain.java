@@ -4,6 +4,18 @@
  */
 public class ServerMain {
 
+	/**
+     * Default constructor for the ServerMain class.
+     * <p>
+     * This constructor is not strictly necessary, as the ServerMain class is intended
+     * to be used as a utility class with a main method. It is added here for documentation
+     * purposes and to comply with standards.
+     * </p>
+     */
+    public ServerMain() {
+        // No specific initialization required
+    }
+	
     /**
      * The main method that launches the server application.
      *

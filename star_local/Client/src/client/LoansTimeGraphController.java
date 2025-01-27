@@ -13,6 +13,18 @@ import java.io.IOException;
  */
 public class LoansTimeGraphController {
 
+	
+	/**
+     * Default constructor for the LoansTimeGraphController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public LoansTimeGraphController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private BarChart<String, Number> loansBarChart;
 

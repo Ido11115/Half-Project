@@ -37,44 +37,61 @@ public class Loan {
     }
 
     // Property methods for UI binding
-
     /**
-     * @return the loan ID property
+     * Represents the loan ID property of a loan.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the loan ID property, which uniquely identifies a loan
      */
     public IntegerProperty loanIdProperty() {
         return loanId;
     }
 
     /**
-     * @return the subscriber ID property
+     * Represents the subscriber ID property of a loan.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the subscriber ID property, which identifies the subscriber associated with the loan
      */
     public IntegerProperty subscriberIdProperty() {
         return subscriberId;
     }
 
     /**
-     * @return the book ID property
+     * Represents the book ID property of a loan.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the book ID property, which identifies the book being loaned
      */
     public IntegerProperty bookIdProperty() {
         return bookId;
     }
 
     /**
-     * @return the loan date property
+     * Represents the loan date property of a loan.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the loan date property, which stores the date when the loan was created
      */
     public StringProperty loanDateProperty() {
         return loanDate;
     }
 
     /**
-     * @return the return date property
+     * Represents the return date property of a loan.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the return date property, which stores the expected return date of the loan
      */
     public StringProperty returnDateProperty() {
         return returnDate;
     }
 
     /**
-     * @return the subscriber name property
+     * Represents the subscriber name property of a loan.
+     * This property can be used for JavaFX bindings and listeners.
+     *
+     * @return the subscriber name property, which stores the name of the subscriber
      */
     public StringProperty subscriberNameProperty() {
         return subscriberName;
@@ -83,42 +100,54 @@ public class Loan {
     // Getters
 
     /**
-     * @return the loan ID
+     * Retrieves the loan ID.
+     *
+     * @return the loan ID, which uniquely identifies a loan
      */
     public int getLoanId() {
         return loanId.get();
     }
 
     /**
-     * @return the subscriber ID
+     * Retrieves the subscriber ID.
+     *
+     * @return the subscriber ID, which identifies the subscriber associated with the loan
      */
     public int getSubscriberId() {
         return subscriberId.get();
     }
 
     /**
-     * @return the book ID
+     * Retrieves the book ID.
+     *
+     * @return the book ID, which identifies the book being loaned
      */
     public int getBookId() {
         return bookId.get();
     }
 
     /**
-     * @return the loan date
+     * Retrieves the loan date.
+     *
+     * @return the loan date, which is the date when the loan was created
      */
     public String getLoanDate() {
         return loanDate.get();
     }
 
     /**
-     * @return the return date
+     * Retrieves the return date.
+     *
+     * @return the return date, which is the expected return date of the loan
      */
     public String getReturnDate() {
         return returnDate.get();
     }
 
     /**
-     * @return the subscriber name
+     * Retrieves the subscriber name.
+     *
+     * @return the subscriber name, which is the name of the subscriber associated with the loan
      */
     public String getSubscriberName() {
         return subscriberName.get();

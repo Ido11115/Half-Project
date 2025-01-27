@@ -12,8 +12,26 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Default constructor for the DeleteSubscriberController class.
+ * <p>
+ * This constructor is implicitly provided by Java and does not require any specific initialization.
+ * All required setup is handled by FXML loading and dependency injection.
+ * </p>
+ */
 public class DeleteSubscriberController {
 
+	/**
+     * Default constructor for the DeleteSubscriberController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All FXML-related fields are initialized via the FXML loader.
+     * </p>
+     */
+    public DeleteSubscriberController() {
+        // No initialization required as fields are set via FXML loader
+    }
+	
     /**
      * Text field for entering the subscriber ID to be deleted.
      */

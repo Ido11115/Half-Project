@@ -6,6 +6,9 @@ import java.util.List;
  * Handles database operations including connecting to the database, managing
  * subscribers, loans, and subscription history, as well as performing various
  * queries and updates on the database.
+ * <p>
+ * This class uses the default constructor provided by Java.
+ * </p>
  */
 public class DBHandler {
 	private static final String DB_URL = "jdbc:mysql://localhost:3306/world?useSSL=false&serverTimezone=UTC";
@@ -13,6 +16,23 @@ public class DBHandler {
 	private static final String PASSWORD = "Aa123456";
 	private int currentSubscriberId = -1;
 
+	/**
+     * Default constructor for the DBHandler class.
+     * <p>
+     * Initializes the handler without specific parameters. 
+     * Database configuration details are defined as constants in the class.
+     * </p>
+     */
+    public DBHandler() {
+        // No specific initialization required here
+    }
+	
+	/**
+	 * The main method is the entry point for testing the database connection.
+	 * It establishes a connection to the database and prints the connection status.
+	 *
+	 * @param args Command-line arguments (not used).
+	 */
 	public static void main(String[] args) {
 		DBHandler dbHandler = new DBHandler();
 		try (Connection connection = dbHandler.connect()) {
@@ -186,11 +206,12 @@ public class DBHandler {
 	}
 
 	/**
-	 * Updates the status of a subscriber in the subscription database.
+	 * Updates the subscriber information in the database.
 	 *
-	 * @param subscriberId The unique ID of the subscriber.
-	 * @param newStatus    The new status to be assigned to the subscriber.
-	 * @throws SQLException If an SQL error occurs during the update.
+	 * @param id    The unique ID of the subscriber.
+	 * @param phone The updated phone number of the subscriber.
+	 * @param email The updated email address of the subscriber.
+	 * @throws SQLException If a database access error occurs.
 	 */
 	public void updateSubscriber(int id, String phone, String email) throws SQLException {
 		String query = "UPDATE subscribe SET subscriber_phone_number = ?, subscriber_email = ? WHERE subscriber_id = ?";
