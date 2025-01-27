@@ -11,6 +11,18 @@ import javafx.stage.Stage;
  */
 public class ReturnBookController {
 
+	
+	/**
+     * Default constructor for the ReturnBookController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public ReturnBookController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private TextField bookIdField;
 

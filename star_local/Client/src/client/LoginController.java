@@ -15,6 +15,17 @@ import javafx.stage.Stage;
  */
 public class LoginController {
 
+	/**
+     * Default constructor for the LoginController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public LoginController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private RadioButton subscriberRadioButton;
 

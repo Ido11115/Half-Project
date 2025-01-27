@@ -133,33 +133,54 @@ public class ServerCommunicator {
 
 	/**
 	 * Updates the status of a specific subscriber.
+	 * Sends a request to the server to change the status of a subscriber to the given new status.
 	 *
-	 * @param subscriberId the subscriber's ID
-	 * @param newStatus    the new status to set
-	 * @throws IOException if an error occurs while updating the subscriber's status
+	 * @param subscriberId the unique identifier of the subscriber whose status is to be updated
+	 * @param newStatus    the new status to assign to the subscriber
+	 * @throws IOException if an error occurs while sending the update request or communicating with the server
 	 */
 	public void updateSubscriberStatus(String subscriberId, String newStatus) throws IOException {
-		sendRequest("UPDATE_SUBSCRIBER_STATUS," + subscriberId + "," + newStatus);
+	    sendRequest("UPDATE_SUBSCRIBER_STATUS," + subscriberId + "," + newStatus);
 	}
 
+	/**
+	 * Checks if a specific book is currently reserved.
+	 * Sends a request to the server to verify the reservation status of a book by its ID.
+	 *
+	 * @param bookId the unique identifier of the book to check
+	 * @return {@code true} if the book is reserved, {@code false} otherwise
+	 * @throws IOException if an error occurs while sending the request or receiving the response from the server
+	 */
 	public boolean isBookReserved(int bookId) throws IOException {
-		String response = sendRequest("IS_BOOK_RESERVED," + bookId);
-		return "true".equalsIgnoreCase(response);
+	    String response = sendRequest("IS_BOOK_RESERVED," + bookId);
+	    return "true".equalsIgnoreCase(response);
 	}
 
+	/**
+	 * Prolongs the return date of a loan.
+	 * Sends a request to the server to update the return date for a specific loan.
+	 *
+	 * @param loanId        the unique identifier of the loan to be prolonged
+	 * @param newReturnDate the new return date to set for the loan in the format "YYYY-MM-DD"
+	 * @return a {@code String} message from the server indicating whether the prolongation was successful or not
+	 * @throws IOException if an error occurs while sending the request or receiving the response from the server
+	 */
 	public String prolongLoan(int loanId, String newReturnDate) throws IOException {
-		return sendRequest("PROLONG_LOAN," + loanId + "," + newReturnDate);
+	    return sendRequest("PROLONG_LOAN," + loanId + "," + newReturnDate);
 	}
 
 	/**
 	 * Closes the connection to the server.
+	 * Ensures the socket connection is properly closed and releases any associated resources.
+	 * Prints a message indicating that the connection has been closed.
 	 *
 	 * @throws IOException if an error occurs while closing the connection
 	 */
 	public void close() throws IOException {
-		if (socket != null && !socket.isClosed()) {
-			socket.close();
-			System.out.println("Connection closed.");
-		}
+	    if (socket != null && !socket.isClosed()) {
+	        socket.close();
+	        System.out.println("Connection closed.");
+	    }
 	}
+
 }

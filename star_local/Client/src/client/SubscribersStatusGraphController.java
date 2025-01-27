@@ -11,8 +11,28 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Controller class for managing the Subscribers Status Graph.
+ * Responsible for displaying subscriber status data in a bar chart.
+ * <p>
+ * This class interacts with the server to fetch subscriber status data and organizes it
+ * into a bar chart grouped by month and status. It also provides error handling for
+ * server communication or data parsing issues.
+ * </p>
+ */
 public class SubscribersStatusGraphController {
 
+	/**
+     * Default constructor for the SubscribersStatusGraphController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public SubscribersStatusGraphController() {
+        // No specific initialization required
+    }
+	
     /**
      * BarChart for displaying subscriber statuses by month.
      */

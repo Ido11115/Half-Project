@@ -15,6 +15,18 @@ public class Server {
     private static final int PORT = 5555;
     private ScheduledExecutorService scheduler;
 
+    
+    /**
+     * Default constructor for the Server class.
+     * <p>
+     * Initializes the server without any specific parameters. The server will be configured
+     * to listen on the default port and handle background tasks.
+     * </p>
+     */
+    public Server() {
+        // No specific initialization required
+    } 
+   
     /**
      * Starts the server, initializes the background task scheduler, and listens for client connections.
      * The background task is scheduled to run every day.

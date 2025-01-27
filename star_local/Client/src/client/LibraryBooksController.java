@@ -16,8 +16,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Controller class for managing the library's book inventory.
+ * This class handles adding, deleting, and updating books in the library.
+ * It communicates with the server to perform these operations and updates the
+ * user interface accordingly.
+ *
+ * <p>Key functionalities include:</p>
+ * <ul>
+ *     <li>Loading books data from the server</li>
+ *     <li>Adding new books to the library</li>
+ *     <li>Deleting existing books from the library</li>
+ *     <li>Managing the library's book inventory</li>
+ * </ul>
+ *
+ * <p>This class integrates with JavaFX to provide a responsive GUI for managing library books.</p>
+ */
 public class LibraryBooksController {
-
+	
+	/**
+     * Default constructor for the LibraryBooksController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public LibraryBooksController() {
+        // No specific initialization required
+    }
+	
     /**
      * Table view for displaying the list of books.
      */
@@ -132,7 +159,11 @@ public class LibraryBooksController {
     }
 
     /**
-     * Loads the list of books from the server and populates the table view.
+     * Loads the list of books from the server and updates the table view.
+     * Fetches all books from the server, parses the response, and populates the table
+     * with the retrieved data.
+     *
+     * @throws IOException if there is an issue communicating with the server
      */
     @FXML
     private void loadBooksData() {
@@ -156,7 +187,10 @@ public class LibraryBooksController {
 
     /**
      * Handles the addition of a new book to the library.
-     * Validates user input, sends a request to the server, and updates the table view.
+     * Validates user input, sends a request to the server to add the book,
+     * and refreshes the table view with the updated book list.
+     *
+     * @throws IOException if there is an issue communicating with the server
      */
     @FXML
     private void handleAddBook() {
@@ -201,8 +235,11 @@ public class LibraryBooksController {
 
     /**
      * Handles the deletion of a selected book from the library.
+     * Sends a delete request to the server for the selected book and
+     * updates the table view upon successful deletion.
      *
-     * @param event The mouse event triggered by selecting a book.
+     * @param event the mouse event triggered by selecting a book for deletion
+     * @throws IOException if there is an issue communicating with the server
      */
     @FXML
     private void handleDeleteBook(MouseEvent event) {

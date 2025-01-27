@@ -14,6 +14,18 @@ import javafx.stage.Stage;
  */
 public class ConnectController {
 
+    /**
+     * Default constructor for the ConnectController class.
+     * <p>
+     * This constructor is implicitly provided by Java and does not perform
+     * any additional initialization. All setup occurs within the FXML loader
+     * and associated methods.
+     * </p>
+     */
+    public ConnectController() {
+        // Default constructor
+    }
+
     @FXML
     private TextField ipField;
 

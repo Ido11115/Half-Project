@@ -19,6 +19,17 @@ import javafx.scene.Node;
  */
 public class LibrarianMenuController {
 
+	/**
+     * Default constructor for the LibrarianMenuController class.
+     * <p>
+     * Initializes the controller without any specific parameters. All required
+     * fields are set by the FXML loader.
+     * </p>
+     */
+    public LibrarianMenuController() {
+        // No specific initialization required
+    }
+	
 	private ServerCommunicator serverCommunicator;
 
 	@FXML

@@ -9,8 +9,23 @@ import javafx.stage.Stage;
 /**
  * The ClientGUI class is the main entry point for the JavaFX application.
  * It initializes and displays the GUI for connecting to a server.
+ * <p>
+ * This class relies on the default constructor provided by Java,
+ * as no additional fields or setup are required upon instantiation.
+ * </p>
  */
 public class ClientGUI extends Application {
+
+    /**
+     * Default constructor for the ClientGUI class.
+     * <p>
+     * This constructor is implicitly provided by Java and requires no additional implementation,
+     * as all necessary setup is performed in the {@link #start(Stage)} method.
+     * </p>
+     */
+    public ClientGUI() {
+        // Default constructor
+    }
 
     /**
      * Starts the JavaFX application by loading the "Connect.fxml" file,

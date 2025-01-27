@@ -14,8 +14,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Controller class for managing subscriber information in a GUI.
+ * Handles loading, searching, and displaying subscriber data in a table view.
+ * <p>
+ * This class communicates with the server to fetch and manage subscriber details.
+ * It provides functionalities for:
+ * <ul>
+ *     <li>Loading subscriber data from the server</li>
+ *     <li>Searching subscribers by their unique ID</li>
+ *     <li>Displaying subscriber details such as name, email, and status</li>
+ * </ul>
+ * <p>
+ * This class is designed to be used with JavaFX for creating a responsive user interface.
+ */
 public class SubscriberInformationController {
 
+	/**
+     * Default constructor for the SubscriberInformationController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public SubscriberInformationController() {
+        // No specific initialization required
+    }
+
+	
     /**
      * TextField for searching subscribers by ID.
      */
@@ -69,9 +95,10 @@ public class SubscriberInformationController {
     private ServerCommunicator serverCommunicator;
 
     /**
-     * Sets the ServerCommunicator instance and loads subscriber data if the communicator is initialized.
+     * Sets the ServerCommunicator instance for server interactions.
+     * This method initializes the `serverCommunicator` field and triggers the loading of subscriber data.
      *
-     * @param serverCommunicator the ServerCommunicator instance
+     * @param serverCommunicator the ServerCommunicator instance used to communicate with the server
      */
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
@@ -81,7 +108,8 @@ public class SubscriberInformationController {
     }
 
     /**
-     * Initializes the controller by setting up table columns.
+     * Initializes the controller by setting up table column bindings.
+     * Configures how each column in the table view retrieves data from the `Subscriber` objects.
      */
     @FXML
     private void initialize() {
@@ -93,7 +121,9 @@ public class SubscriberInformationController {
     }
 
     /**
-     * Loads subscriber data from the server and populates the table.
+     * Loads subscriber data from the server and populates the table view.
+     * Sends a request to the server to fetch subscriber information,
+     * parses the response, and updates the table with the retrieved data.
      */
     private void loadSubscriberData() {
         if (serverCommunicator == null) {
@@ -116,9 +146,10 @@ public class SubscriberInformationController {
 
     /**
      * Parses subscriber data received from the server.
+     * Converts raw server response data into a list of `Subscriber` objects for display.
      *
-     * @param data the raw subscriber data as a string
-     * @return a list of Subscriber objects
+     * @param data the raw subscriber data as a semicolon-separated string
+     * @return a list of `Subscriber` objects representing the parsed data
      */
     private List<Subscriber> parseSubscribers(String data) {
         List<Subscriber> subscribers = new ArrayList<>();
@@ -144,7 +175,9 @@ public class SubscriberInformationController {
     }
 
     /**
-     * Handles the search functionality by filtering subscribers by ID.
+     * Handles the search functionality for subscribers.
+     * Filters the subscriber list by the ID entered in the search field
+     * and updates the table view with the search results.
      */
     @FXML
     private void handleSearch() {
@@ -166,7 +199,8 @@ public class SubscriberInformationController {
     }
 
     /**
-     * Clears the search field and resets the table to show all subscribers.
+     * Clears the search field and resets the table view.
+     * Restores the full list of subscribers in the table view after clearing the search input.
      */
     @FXML
     private void handleClearSearch() {
@@ -176,8 +210,9 @@ public class SubscriberInformationController {
 
     /**
      * Displays an error message in an alert dialog.
+     * This method is used to notify the user of any issues, such as invalid input or server errors.
      *
-     * @param message the error message to display
+     * @param message the error message to display in the alert dialog
      */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

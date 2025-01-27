@@ -13,6 +13,17 @@ import java.time.LocalDate;
  */
 public class LoanBookController {
 
+	/**
+     * Default constructor for the LoanBookController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public LoanBookController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private TextField subscriberIdField;
 

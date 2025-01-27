@@ -15,7 +15,27 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
+/**
+ * Controller class for managing the subscriber menu in the application.
+ * Provides functionality for navigating to different screens, such as Search Book,
+ * My Profile, and Logout.
+ * <p>
+ * This controller interacts with the server using a {@code ServerCommunicator} instance
+ * and maintains the context of the currently logged-in subscriber.
+ * </p>
+ */
 public class SubscriberMenuController {
+	
+	/**
+     * Default constructor for the SubscriberMenuController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public SubscriberMenuController() {
+        // No specific initialization required
+    }
 	
 	/**
 	 * Button for logging out the current subscriber.

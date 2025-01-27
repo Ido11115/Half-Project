@@ -17,6 +17,17 @@ import java.util.List;
  */
 public class SubscriberDetailsChangeController {
 
+	/**
+     * Default constructor for the SubscriberDetailsChangeController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public SubscriberDetailsChangeController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private TextField searchField;
 

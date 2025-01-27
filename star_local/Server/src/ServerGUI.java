@@ -24,6 +24,17 @@ public class ServerGUI extends Application {
     private Thread serverThread; // Thread to run the server
 
     /**
+     * Default constructor for the ServerGUI class.
+     * <p>
+     * Initializes the ServerGUI application without any specific parameters.
+     * This constructor is called automatically when the application is launched.
+     * </p>
+     */
+    public ServerGUI() {
+        // No specific initialization required
+    }
+    
+    /**
      * The entry point for the JavaFX application.
      * Initializes the GUI components and sets up the primary stage.
      *

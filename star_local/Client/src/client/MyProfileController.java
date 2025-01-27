@@ -15,6 +15,17 @@ import javafx.stage.Stage;
  */
 public class MyProfileController {
 
+	/**
+     * Default constructor for the MyProfileController class.
+     * <p>
+     * Initializes the controller without any specific parameters.
+     * All required fields and components are set by the FXML loader.
+     * </p>
+     */
+    public MyProfileController() {
+        // No specific initialization required
+    }
+	
     @FXML
     private Label idLabel;
 
