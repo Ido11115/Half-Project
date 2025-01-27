@@ -137,7 +137,10 @@ public class LoansController {
 
 
 
-    
+    /**
+     * Handles the prolongation of a loan for a selected book.
+     * Prompts the user for a new return date and updates the loan if valid.
+     */
     @FXML
     private void handleProlongLoan() {
         Loan selectedLoan = loansTable.getSelectionModel().getSelectedItem();
@@ -180,7 +183,11 @@ public class LoansController {
         }
     }
 
-    
+    /**
+     * Displays an informational message in an alert dialog.
+     *
+     * @param message The informational message to display.
+     */
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
@@ -189,7 +196,10 @@ public class LoansController {
         alert.showAndWait();
     }
 
-    
+    /**
+     * Loads the list of loans from the server and populates the loans table.
+     * Displays an error message if the loans cannot be loaded.
+     */
     private void loadLoans() {
         if (serverCommunicator == null) {
             showError("Server communicator is not initialized.");
@@ -215,9 +225,6 @@ public class LoansController {
         }
     }
 
-
-
-    
     
     
     

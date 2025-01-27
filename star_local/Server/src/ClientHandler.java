@@ -629,7 +629,16 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles various server commands related to managing library books and subscribers.
+	 */
 	private void handleProlongLoan(String command, PrintWriter writer) {
+		/**
+	     * Handles the prolongation of a loan.
+	     *
+	     * @param command The command string in the format: PROLONG_LOAN,loanId,newReturnDate.
+	     * @param writer  The PrintWriter to send responses back to the client.
+	     */
 		String[] parts = command.split(",");
 		if (parts.length != 3) {
 			writer.println("Invalid command format. Expected: PROLONG_LOAN,loanId,newReturnDate");
@@ -661,6 +670,12 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * Handles the deletion of a subscriber.
+	 *
+	 * @param command The command string in the format: DELETE_SUBSCRIBER,subscriberId.
+	 * @param writer  The PrintWriter to send responses back to the client.
+	 */
 	private void handleDeleteSubscriber(String command, PrintWriter writer) {
 		String[] parts = command.split(",");
 		if (parts.length != 2) {
@@ -677,6 +692,12 @@ public class ClientHandler implements Runnable {
 			writer.println("Error deleting subscriber: " + e.getMessage());
 		}
 	}
+	
+	/**
+	 * Handles fetching all books from the database.
+	 *
+	 * @param writer The PrintWriter to send responses back to the client.
+	 */
 	private void handleGetBooks(PrintWriter writer) {
 	    try {
 	        List<String> books = dbHandler.getAllBooksAsString();
@@ -691,6 +712,12 @@ public class ClientHandler implements Runnable {
 	    }
 	}
 
+	/**
+	 * Handles the addition of a new book to the database.
+	 *
+	 * @param command The command string in the format: ADD_BOOK,name,author,subject,copies,location,description.
+	 * @param writer  The PrintWriter to send responses back to the client.
+	 */
 	private void handleAddBook(String command, PrintWriter writer) {
 	    String[] parts = command.split(",", 7);
 	    if (parts.length != 7) {
@@ -714,6 +741,12 @@ public class ClientHandler implements Runnable {
 	    }
 	}
 
+	/**
+	 * Handles the deletion of a book from the database.
+	 *
+	 * @param command The command string in the format: DELETE_BOOK,name.
+	 * @param writer  The PrintWriter to send responses back to the client.
+	 */
 	private void handleDeleteBook(String command, PrintWriter writer) {
 	    String[] parts = command.split(",", 2);
 	    if (parts.length != 2) {
