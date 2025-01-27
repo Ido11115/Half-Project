@@ -916,6 +916,13 @@ public class DBHandler {
 		return loans;
 	}
 
+	/**
+	 * Checks if a book is reserved by its ID.
+	 *
+	 * @param bookId The ID of the book to check.
+	 * @return True if the book is reserved, otherwise false.
+	 * @throws SQLException If a database access error occurs.
+	 */
 	public boolean isBookReserved(int bookId) throws SQLException {
 		String query = "SELECT COUNT(*) FROM reserve_books WHERE book_id = ?";
 		try (Connection connection = connect();
@@ -930,6 +937,14 @@ public class DBHandler {
 		return false; // Not reserved
 	}
 
+	/**
+	 * Prolongs the loan period for a book by updating the return date.
+	 *
+	 * @param loanId The ID of the loan to update.
+	 * @param newReturnDate The new return date in a valid date format.
+	 * @return True if the loan was successfully updated, otherwise false.
+	 * @throws SQLException If a database access error occurs.
+	 */
 	public boolean prolongLoan(int loanId, String newReturnDate) throws SQLException {
 		String query = "UPDATE loans SET return_date = ? WHERE loan_id = ?";
 		try (Connection connection = connect();
@@ -940,6 +955,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Retrieves the book ID associated with a specific loan ID.
+	 *
+	 * @param loanId The ID of the loan.
+	 * @return The book ID associated with the loan.
+	 * @throws SQLException If no loan is found with the given loan ID or if a database access error occurs.
+	 */
 	public int getBookIdByLoanId(int loanId) throws SQLException {
 		String query = "SELECT book_id FROM loans WHERE loan_id = ?";
 		try (Connection connection = connect();
@@ -955,6 +977,12 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Deletes a subscriber from the database.
+	 *
+	 * @param subscriberId The ID of the subscriber to delete.
+	 * @throws SQLException If no subscriber is found with the given ID or if a database access error occurs.
+	 */
 	public void deleteSubscriber(int subscriberId) throws SQLException {
 		String query = "DELETE FROM subscribe WHERE subscriber_id = ?";
 		try (Connection connection = connect();
@@ -967,6 +995,12 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Retrieves all books from the database as a list of strings.
+	 *
+	 * @return A list of strings representing all books in the database.
+	 * @throws SQLException If a database access error occurs.
+	 */
 	public List<String> getAllBooksAsString() throws SQLException {
 	    String query = "SELECT * FROM books";
 	    List<String> books = new ArrayList<>();
@@ -987,6 +1021,17 @@ public class DBHandler {
 	    return books;
 	}
 
+	/**
+	 * Adds a new book to the database.
+	 *
+	 * @param name The name of the book.
+	 * @param author The author of the book.
+	 * @param subject The subject of the book.
+	 * @param copies The number of available copies.
+	 * @param location The location of the book.
+	 * @param description The description of the book.
+	 * @throws SQLException If a database access error occurs.
+	 */
 	public void addBook(String name, String author, String subject, int copies, String location, String description) throws SQLException {
 	    String query = "INSERT INTO books (name, author, subject, available_copies, location, description) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -1002,6 +1047,12 @@ public class DBHandler {
 	    }
 	}
 
+	/**
+	 * Deletes a book from the database by its name.
+	 *
+	 * @param name The name of the book to delete.
+	 * @throws SQLException If a database access error occurs.
+	 */
 	public void deleteBook(String name) throws SQLException {
 	    String query = "DELETE FROM books WHERE name = ?";
 

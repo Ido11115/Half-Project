@@ -1,4 +1,7 @@
-
+/**
+ * Controller class for handling the deletion of a subscriber in the application.
+ * Communicates with the server to process the deletion request.
+ */
 package client;
 
 import javafx.fxml.FXML;
@@ -11,15 +14,31 @@ import java.io.IOException;
 
 public class DeleteSubscriberController {
 
+    /**
+     * Text field for entering the subscriber ID to be deleted.
+     */
     @FXML
     private TextField subscriberIdField;
 
+    /**
+     * Object responsible for communicating with the server.
+     */
     private ServerCommunicator serverCommunicator;
 
+    /**
+     * Sets the server communicator used for sending requests to the server.
+     *
+     * @param serverCommunicator The server communicator to be set.
+     */
     public void setServerCommunicator(ServerCommunicator serverCommunicator) {
         this.serverCommunicator = serverCommunicator;
     }
 
+    /**
+     * Handles the deletion of a subscriber when the delete button is clicked.
+     *
+     * Validates the subscriber ID, sends a delete request to the server, and displays feedback to the user.
+     */
     @FXML
     private void handleDelete() {
         String subscriberIdText = subscriberIdField.getText().trim();
@@ -47,16 +66,28 @@ public class DeleteSubscriberController {
         }
     }
 
+    /**
+     * Handles the cancellation of the operation when the cancel button is clicked.
+     * Closes the current stage without making any changes.
+     */
     @FXML
     private void handleCancel() {
         closeCurrentStage();
     }
 
+    /**
+     * Closes the current stage (window) of the application.
+     */
     private void closeCurrentStage() {
         Stage stage = (Stage) subscriberIdField.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * Displays an error message in an alert dialog.
+     *
+     * @param message The error message to be displayed.
+     */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -64,6 +95,11 @@ public class DeleteSubscriberController {
         alert.showAndWait();
     }
 
+    /**
+     * Displays an informational message in an alert dialog.
+     *
+     * @param message The informational message to be displayed.
+     */
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
